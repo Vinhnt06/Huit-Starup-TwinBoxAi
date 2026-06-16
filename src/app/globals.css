@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0A0A0A;
+  --foreground: #EAEAEA;
+  --font-mono: var(--font-mono);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-mono);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  border-radius: 0px !important;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-mono), monospace;
+  overflow-x: hidden;
+}
+
+/* Clean industrial styles */
+
+/* Industrial Grid lines */
+.industrial-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(234, 234, 234, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(234, 234, 234, 0.04) 1px, transparent 1px);
+}
+
+/* Hazard Stripes decoration */
+.hazard-stripes {
+  background: repeating-linear-gradient(
+    45deg,
+    #FF2A2A,
+    #FF2A2A 10px,
+    #0A0A0A 10px,
+    #0A0A0A 20px
+  );
+}
+
+.hazard-stripes-muted {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(234, 234, 234, 0.15),
+    rgba(234, 234, 234, 0.15) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+}
+
+/* Monospace font pairs */
+.font-tech {
+  font-family: var(--font-mono), monospace;
+}
+
+/* Custom Brutalist scrollbars */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: #121212;
+  border-left: 1px solid rgba(234, 234, 234, 0.15);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(234, 234, 234, 0.3);
+  border: 2px solid #121212;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FF2A2A;
+}
+
+/* Custom glow text effects */
+.glow-green {
+  text-shadow: 0 0 4px rgba(74, 246, 38, 0.5);
+}
+
+.glow-red {
+  text-shadow: 0 0 4px rgba(255, 42, 42, 0.7);
+}
