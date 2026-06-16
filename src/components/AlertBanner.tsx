@@ -20,9 +20,15 @@ export default function AlertBanner({ state }: AlertBannerProps) {
         <span>[!] CẢNH BÁO: TRẠNG THÁI {state.nodeStatus}</span>
         <span className="hidden md:inline">{"///"}</span>
         {isCritical ? (
-          <span className="hidden md:inline">
-            NỒNG ĐỘ C2H4 VƯỢT NGƯỠNG AN TOÀN ({state.c2h4} ppm) &gt;&gt; KÍCH HOẠT TẦN SỐ KHẨN CẤP (1 PHÚT)
-          </span>
+          state.dslHours <= 0 ? (
+            <span className="hidden md:inline">
+              CẢNH BÁO: HẠN SỬ DỤNG AN TOÀN ĐÃ HẾT (DSL = 0 GIỜ) &gt;&gt; LÔ HÀNG CẦN TIÊU THỦY HOẶC XỬ LÝ KHẨN CẤP
+            </span>
+          ) : (
+            <span className="hidden md:inline">
+              NỒNG ĐỘ C2H4 VƯỢT NGƯỠNG AN TOÀN ({state.c2h4} ppm) &gt;&gt; KÍCH HOẠT TẦN SỐ KHẨN CẤP (1 PHÚT)
+            </span>
+          )
         ) : (
           <span className="hidden md:inline">
             PHÁT HIỆN BIẾN ĐỘNG MÔI TRƯỜNG: NỒNG ĐỘ C2H4 / NHIỆT ĐỘ TĂNG

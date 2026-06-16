@@ -141,11 +141,17 @@ export default function TelemetryHUD({ state }: TelemetryHUDProps) {
         <div className="flex flex-col items-end gap-2 border-l border-neutral-800 pl-0 md:pl-6">
           <div className="flex items-baseline gap-2 text-right">
             <span className="text-xs text-neutral-500">HSD CÒN LẠI:</span>
-            <span className="text-2xl font-extrabold text-[#4AF626] tracking-tight">{state.dslHours}</span>
-            <span className="text-xs text-neutral-500">GIỜ</span>
+            {state.dslHours <= 0 ? (
+              <span className="text-sm font-extrabold text-[#FF2A2A] tracking-tight animate-pulse uppercase">[ ĐÃ HỎNG / EXPIRED ]</span>
+            ) : (
+              <>
+                <span className="text-2xl font-extrabold text-[#4AF626] tracking-tight">{state.dslHours}</span>
+                <span className="text-xs text-neutral-500">GIỜ</span>
+              </>
+            )}
           </div>
           <div className="flex flex-col gap-1 w-full md:w-56 text-left md:text-right">
-            <div className="text-[10px] font-tech text-[#4AF626] overflow-hidden whitespace-nowrap">
+            <div className={`text-[10px] font-tech overflow-hidden whitespace-nowrap ${state.dslHours <= 0 ? "text-[#FF2A2A]" : "text-[#4AF626]"}`}>
               {asciiBar}
             </div>
             <div className="flex justify-between text-[8px] text-neutral-500 uppercase tracking-widest mt-1">

@@ -151,7 +151,7 @@ export function useTelemetrySim() {
 
         // --- 3. Alert Overrides & Frequency ---
         let nextStatus: "NORMAL" | "WARNING" | "CRITICAL" = "NORMAL";
-        if (nextC2H4 >= 25.0 || nextTempAmbient >= 8.0) {
+        if (nextC2H4 >= 25.0 || nextTempAmbient >= 8.0 || prev.dslHours <= 0) {
           nextStatus = "CRITICAL";
         } else if (nextC2H4 >= 15.0 || nextTempAmbient >= 6.0) {
           nextStatus = "WARNING";
