@@ -69,21 +69,30 @@ export default function Home() {
       <CRTOverlay />
 
       {/* Top Tactical Banner */}
-      <div className="w-full bg-[#0A0A0A] border-b border-neutral-800 p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
-        <div className="flex flex-col">
-          <div className="flex items-center gap-2">
-            <span className="bg-[#FF2A2A] text-[#0A0A0A] text-xs font-bold px-1.5 py-0.5 tracking-tighter uppercase font-tech">
-              TWINBOXAI // HỆ THỐNG HOẠT ĐỘNG
+      <div className="w-full bg-[#050505] border-b border-neutral-800 py-6 px-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-3">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4AF626] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#4AF626]"></span>
             </span>
-            <span className="text-xs text-neutral-500 font-tech">REV_2.4.9</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xl md:text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-200 to-neutral-500 font-sans">
+                TWINBOX<span className="text-[#4AF626] drop-shadow-[0_0_8px_rgba(74,246,38,0.4)]">AI</span>
+              </span>
+              <span className="border border-neutral-850 text-neutral-500 text-[8px] px-1 py-0.5 tracking-widest uppercase font-mono bg-[#0A0A0A]">
+                REV_2.5.0 // ONLINE
+              </span>
+            </div>
           </div>
-          <h1 className="text-lg md:text-xl font-black text-white tracking-widest uppercase mt-1">
-            HỆ THỐNG GIÁM SÁT VÀ ĐIỀU HÒA CHUỖI LẠNH ĐỘNG
+          <h1 className="text-xs md:text-sm font-semibold text-neutral-400 tracking-[0.15em] uppercase font-mono flex items-center gap-2 mt-1">
+            <span className="inline-block w-1.5 h-3 bg-[#FF2A2A]"></span>
+            Hệ thống giám sát và điều hòa chuỗi lạnh động (Active Actuation)
           </h1>
         </div>
 
         {/* Top telemetry state bar */}
-        <div className="flex flex-wrap items-center gap-4 border border-neutral-800 p-2 bg-[#0F0F0F] text-[10px] text-neutral-400">
+        <div className="flex flex-wrap items-center gap-4 border border-neutral-800 p-2.5 bg-[#0A0A0A] text-[10px] text-neutral-400 font-mono">
           <div>VĨ ĐỘ: <span className="text-white">10.8231° N</span></div>
           <div>KINH ĐỘ: <span className="text-white">106.6297° E</span></div>
           <div>RSSI: <span className="text-[#4AF626]">-67 dBm</span></div>

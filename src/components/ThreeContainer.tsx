@@ -201,14 +201,14 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
   const length = 9;
 
   const crates = [
-    { position: [-0.7, -1.4, -3.0] as [number, number, number], fruitColor: "#FF3B30", color: "#FF3B30", label: "THÙNG TÁO ĐỎ #01 (Vùng trước)" },
-    { position: [0.7, -1.4, -3.0] as [number, number, number], fruitColor: "#FF9500", color: "#FF9500", label: "THÙNG CAM VÀNG #01 (Vùng trước)" },
-    { position: [-0.7, -1.4, -1.0] as [number, number, number], fruitColor: "#34C759", color: "#34C759", label: "THÙNG XOÀI XANH #01 (Vùng trung tâm)" },
-    { position: [0.7, -1.4, -1.0] as [number, number, number], fruitColor: "#FF3B30", color: "#FF3B30", label: "THÙNG TÁO ĐỎ #02 (Vùng trung tâm)" },
-    { position: [-0.7, -1.4, 1.0] as [number, number, number], fruitColor: "#FF9500", color: "#FF9500", label: "THÙNG CAM VÀNG #02 (Vùng trung tâm)" },
-    { position: [0.7, -1.4, 1.0] as [number, number, number], fruitColor: "#34C759", color: "#34C759", label: "THÙNG XOÀI XANH #02 (Vùng sau)" },
-    { position: [-0.7, -1.4, 3.0] as [number, number, number], fruitColor: "#FF3B30", color: "#FF3B30", label: "THÙNG TÁO ĐỎ #03 (Vùng sau)" },
-    { position: [0.7, -1.4, 3.0] as [number, number, number], fruitColor: "#FF9500", color: "#FF9500", label: "THÙNG CAM VÀNG #03 (Vùng sau)" },
+    { position: [-0.7, -1.4, -3.0] as [number, number, number], fruitColor: "#FF3B30", color: "#FF3B30", label: "THÙNG TÁO ĐỎ #01 (Khu A1 - Trước)" },
+    { position: [0.7, -1.4, -3.0] as [number, number, number], fruitColor: "#FF3B30", color: "#FF3B30", label: "THÙNG TÁO ĐỎ #02 (Khu A2 - Trước)" },
+    { position: [-0.7, -1.4, -1.0] as [number, number, number], fruitColor: "#FF3B30", color: "#FF3B30", label: "THÙNG TÁO ĐỎ #03 (Khu B1 - Giữa)" },
+    { position: [0.7, -1.4, -1.0] as [number, number, number], fruitColor: "#FF3B30", color: "#FF3B30", label: "THÙNG TÁO ĐỎ #04 (Khu B2 - Giữa)" },
+    { position: [-0.7, -1.4, 1.0] as [number, number, number], fruitColor: "#FF3B30", color: "#FF3B30", label: "THÙNG TÁO ĐỎ #05 (Khu B3 - Giữa)" },
+    { position: [0.7, -1.4, 1.0] as [number, number, number], fruitColor: "#FF3B30", color: "#FF3B30", label: "THÙNG TÁO ĐỎ #06 (Khu C1 - Sau)" },
+    { position: [-0.7, -1.4, 3.0] as [number, number, number], fruitColor: "#FF3B30", color: "#FF3B30", label: "THÙNG TÁO ĐỎ #07 (Khu C2 - Sau)" },
+    { position: [0.7, -1.4, 3.0] as [number, number, number], fruitColor: "#FF3B30", color: "#FF3B30", label: "THÙNG TÁO ĐỎ #08 (Khu C3 - Sau)" },
   ];
 
   return (
@@ -407,26 +407,12 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
                 Độ ẩm: 85% RH<br />
                 Giao thức: Mesh (ESP-NOW)
               </>
-            ) : selectedNode.includes("TÁO ĐỎ") ? (
+            ) : selectedNode.includes("THÙNG") ? (
               <>
-                Lô hàng: Táo Fuji tươi<br />
+                Lô hàng: Táo đỏ Fuji nhập khẩu<br />
                 Nhiệt độ tối ưu: 0°C - 3°C<br />
-                Nhạy Ethylene: Cao (Dễ hỏng)<br />
-                Chỉ số hô hấp: Trung bình
-              </>
-            ) : selectedNode.includes("CAM VÀNG") ? (
-              <>
-                Lô hàng: Cam Cara vàng<br />
-                Nhiệt độ tối ưu: 4°C - 6°C<br />
-                Nhạy Ethylene: Thấp<br />
-                Chỉ số hô hấp: Thấp
-              </>
-            ) : selectedNode.includes("XOÀI XANH") ? (
-              <>
-                Lô hàng: Xoài Cát Chu chín xanh<br />
-                Nhiệt độ tối ưu: 10°C - 12°C<br />
-                Nhạy Ethylene: Rất cao (Tỏa khí nhiều)<br />
-                Chỉ số hô hấp: Rất cao
+                Nhạy Ethylene: Cao (Dễ bị chín ép)<br />
+                Độ ẩm tối ưu: 90% - 95% RH
               </>
             ) : (
               <>Không có thông tin chi tiết</>
