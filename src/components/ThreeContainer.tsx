@@ -53,7 +53,7 @@ function Fan({ active, position }: { active: boolean; position: [number, number,
   );
 }
 
-// Interactive Sensor Node component
+// Interactive Sensor Node component (Realistic Industrial IoT Dual-Chamber Enclosure)
 function SensorNode({
   position,
   status,
@@ -63,26 +63,25 @@ function SensorNode({
   status: "NORMAL" | "WARNING" | "CRITICAL";
   onClick: () => void;
 }) {
-  const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
+  const ledRef = useRef<THREE.Mesh>(null);
 
-  // Pulse effect based on time
+  // LED pulsing effect
   useFrame(({ clock }) => {
-    if (meshRef.current) {
-      const scale = 1 + Math.sin(clock.getElapsedTime() * 5) * 0.12;
-      meshRef.current.scale.set(scale, scale, scale);
+    if (ledRef.current) {
+      const scale = 1 + Math.sin(clock.getElapsedTime() * 6) * 0.15;
+      ledRef.current.scale.set(scale, scale, scale);
     }
   });
 
-  let nodeColor = "#4AF626"; // NORMAL
-  if (status === "CRITICAL") nodeColor = "#FF2A2A";
-  else if (status === "WARNING") nodeColor = "#F59E0B";
+  let statusColor = "#4AF626"; // NORMAL
+  if (status === "CRITICAL") statusColor = "#FF2A2A";
+  else if (status === "WARNING") statusColor = "#F59E0B";
 
   return (
     <group position={position}>
-      {/* Node Sphere */}
+      {/* Invisible hover & click handler box */}
       <mesh
-        ref={meshRef}
         onClick={(e) => {
           e.stopPropagation();
           onClick();
@@ -97,26 +96,64 @@ function SensorNode({
           setHovered(false);
           document.body.style.cursor = "auto";
         }}
+        visible={false}
       >
-        <sphereGeometry args={[hovered ? 0.35 : 0.28, 32, 32]} />
-        <meshBasicMaterial color={nodeColor} />
+        <boxGeometry args={[0.6, 0.6, 0.6]} />
       </mesh>
 
-      {/* Ring Aura */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.38, 0.42, 32]} />
-        <meshBasicMaterial color={nodeColor} transparent opacity={0.6} side={THREE.DoubleSide} />
-      </mesh>
-
-      {/* Connection line to container roof */}
+      {/* Solid steel mounting rod extending to container roof (Y = 1.8) */}
       <Line
         points={[
           [0, 0, 0],
           [0, 1.8 - position[1], 0],
         ]}
-        color={hovered ? "#EAEAEA" : "rgba(234,234,234,0.15)"}
-        lineWidth={1}
+        color={hovered ? "#4AF626" : "rgba(100, 100, 100, 0.7)"}
+        lineWidth={2}
       />
+      {/* Small ceiling mounting flange plate */}
+      <mesh position={[0, 1.8 - position[1], 0]}>
+        <cylinderGeometry args={[0.15, 0.15, 0.02, 12]} />
+        <meshStandardMaterial color="#222" metalness={0.8} roughness={0.3} />
+      </mesh>
+
+      {/* Enclosure Rotation & Structure */}
+      <group rotation={[0.05, hovered ? Math.PI / 4 : 0.2, 0.05]}>
+        {/* Main core sealed body - ABS Industrial Plastic (Dark Grey) */}
+        <mesh>
+          <boxGeometry args={[0.3, 0.2, 0.45]} />
+          <meshStandardMaterial color={hovered ? "#333333" : "#1E1E1E"} roughness={0.5} metalness={0.1} />
+        </mesh>
+        
+        {/* Protective rugged bumper - High-visibility Industrial Orange */}
+        <mesh position={[0, 0, 0]}>
+          <boxGeometry args={[0.32, 0.08, 0.47]} />
+          <meshStandardMaterial color="#FF9500" roughness={0.4} />
+        </mesh>
+
+        {/* Breathable Chamber Cap (Ethylene sensor compartment) */}
+        <mesh position={[0, 0.1, 0.08]}>
+          <boxGeometry args={[0.16, 0.03, 0.16]} />
+          <meshStandardMaterial color="#3A3A3A" roughness={0.9} />
+        </mesh>
+
+        {/* Pulsing Status LED Indicator */}
+        <mesh ref={ledRef} position={[0, 0.1, -0.12]}>
+          <sphereGeometry args={[0.035, 16, 16]} />
+          <meshBasicMaterial color={statusColor} />
+        </mesh>
+        
+        {/* Flexible Whip Antenna */}
+        <mesh position={[-0.1, 0.1, -0.16]} rotation={[-0.15, 0, -0.1]}>
+          <cylinderGeometry args={[0.006, 0.006, 0.22, 8]} />
+          <meshStandardMaterial color="#111111" roughness={0.2} />
+        </mesh>
+        
+        {/* Ground projection status ring */}
+        <mesh position={[0, -0.15, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.22, 0.25, 32]} />
+          <meshBasicMaterial color={statusColor} transparent opacity={hovered ? 0.9 : 0.4} side={THREE.DoubleSide} />
+        </mesh>
+      </group>
     </group>
   );
 }

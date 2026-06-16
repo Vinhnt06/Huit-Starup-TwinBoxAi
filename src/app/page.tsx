@@ -21,7 +21,7 @@ export default function Home() {
       ? new Date().toLocaleTimeString("vi-VN", { hour12: false })
       : "00:00:00";
     return [
-      `[${timeStr}] [INFO] Khởi động thiết bị thường trực TwinBoxAi thành công...`,
+      `[${timeStr}] [INFO] Khởi động thiết bị thường trực FreshTwin AI thành công...`,
       `[${timeStr}] [INFO] Liên kết giao thức ESP-NOW chuỗi Mesh: Ổn định (3 nodes online)`,
       `[${timeStr}] [INFO] Gateway LTE-4G (A7670C) đang kết nối với Cloud Broker...`
     ];
@@ -78,7 +78,7 @@ export default function Home() {
             </span>
             <div className="flex items-center gap-2">
               <span className="text-xl md:text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-200 to-neutral-500 font-sans">
-                TWINBOX<span className="text-[#4AF626] drop-shadow-[0_0_8px_rgba(74,246,38,0.4)]">AI</span>
+                FRESHTWIN <span className="text-[#4AF626] drop-shadow-[0_0_8px_rgba(74,246,38,0.4)]">AI</span>
               </span>
               <span className="border border-neutral-850 text-neutral-500 text-[8px] px-1 py-0.5 tracking-widest uppercase font-mono bg-[#0A0A0A]">
                 REV_2.5.0 // ONLINE

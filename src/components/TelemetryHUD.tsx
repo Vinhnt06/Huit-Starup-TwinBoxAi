@@ -135,7 +135,7 @@ export default function TelemetryHUD({ state }: TelemetryHUDProps) {
             <span className="text-[10px] bg-neutral-800 px-1.5 py-0.5 text-neutral-400">MÔ HÌNH CORE v1.0</span>
           </div>
           <p className="text-[10px] text-neutral-500 mt-1 max-w-xl">
-            Tốc độ chín và phân hủy sinh học của quả phụ thuộc phi tuyến tính vào nhiệt độ tích lũy lõi. Mô hình Arrhenius dự báo thời gian tươi ngon còn lại dựa trên trạng thái biến thiên nhiệt độ thực tế trong container.
+            Tốc độ chín và phân hủy sinh học của thực vật phụ thuộc phi tuyến tính vào nhiệt độ tích lũy lõi. Mô hình Arrhenius nâng cao của FreshTwin AI kết hợp mô hình truyền nhiệt Lumped-parameter và quá trình thoát hơi nước tự nhiên thu nhiệt để ước lượng chính xác nhiệt độ lõi thực tế, từ đó dự đoán thời gian tươi ngon còn lại (Dynamic Shelf Life - DSL) theo thời gian thực.
           </p>
         </div>
         <div className="flex flex-col items-end gap-2 border-l border-neutral-800 pl-0 md:pl-6">

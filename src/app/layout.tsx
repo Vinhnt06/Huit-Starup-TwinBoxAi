@@ -9,7 +9,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TwinBoxAi // HỆ THỐNG GIÁM SÁT CHUỖI LẠNH TỰ ĐỘNG",
+  title: "FreshTwin AI // HỆ THỐNG GIÁM SÁT CHUỖI LẠNH TỰ ĐỘNG",
   description: "Bảng điều khiển telemetry kiểm soát ethylene C2H4, nhiệt độ, độ ẩm và dự đoán thời gian bảo quản (DSL) nông sản bằng AI.",
 };
 
