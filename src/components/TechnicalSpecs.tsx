@@ -94,7 +94,7 @@ export default function TechnicalSpecs() {
           &gt;&gt; GIAO THỨC ĐỊNH TUYẾN LOGISTICS: DYNAMIC FEFO (FIRST EXPIRED, FIRST OUT)
         </div>
         <p className="text-xs text-neutral-400 leading-relaxed">
-          Bằng cách giám sát liên tục chỉ số Ethylene và kết hợp mô hình động học Arrhenius, hệ thống FreshTwin AI tự động phân loại và định tuyến phân phối lô hàng nông sản nào có nguy cơ hỏng sớm hơn sẽ được dỡ xuống và tiêu thụ trước (FEFO), thay vì xuất kho theo lô nhập trước xuất trước truyền thống (FIFO). Phương pháp này giúp giảm thiểu hao hụt chuỗi cung ứng nông sản lạnh xuống dưới 10% theo kế hoạch kinh doanh.
+          Bằng cách giám sát liên tục chỉ số Ethylene và kết hợp mô hình động học Arrhenius, hệ thống TwinBox AI tự động phân loại và định tuyến phân phối lô hàng nông sản nào có nguy cơ hỏng sớm hơn sẽ được dỡ xuống và tiêu thụ trước (FEFO), thay vì xuất kho theo lô nhập trước xuất trước truyền thống (FIFO). Phương pháp này giúp giảm thiểu hao hụt chuỗi cung ứng nông sản lạnh xuống dưới 10% theo kế hoạch kinh doanh.
         </p>
         <div className="flex flex-wrap gap-4 text-[10px] text-neutral-500 uppercase mt-1">
           <span>[ ĐỊNH HƯỚNG ĐỘ TINH CẤU TRÚC LỚN ]</span>
