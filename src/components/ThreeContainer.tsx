@@ -123,7 +123,7 @@ function SensorNode({
           <boxGeometry args={[0.3, 0.2, 0.45]} />
           <meshStandardMaterial color={hovered ? "#333333" : "#1E1E1E"} roughness={0.5} metalness={0.1} />
         </mesh>
-        
+
         {/* Protective rugged bumper - High-visibility Industrial Orange */}
         <mesh position={[0, 0, 0]}>
           <boxGeometry args={[0.32, 0.08, 0.47]} />
@@ -141,13 +141,13 @@ function SensorNode({
           <sphereGeometry args={[0.035, 16, 16]} />
           <meshBasicMaterial color={statusColor} />
         </mesh>
-        
+
         {/* Flexible Whip Antenna */}
         <mesh position={[-0.1, 0.1, -0.16]} rotation={[-0.15, 0, -0.1]}>
           <cylinderGeometry args={[0.006, 0.006, 0.22, 8]} />
           <meshStandardMaterial color="#111111" roughness={0.2} />
         </mesh>
-        
+
         {/* Ground projection status ring */}
         <mesh position={[0, -0.15, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <ringGeometry args={[0.22, 0.25, 32]} />
