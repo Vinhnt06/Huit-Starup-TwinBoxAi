@@ -182,6 +182,31 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── HOW IT WORKS ────────────────────────────────────────────────── */}
+      <section className="w-full py-16 px-4 bg-[#F7F8FA]" aria-label="How it works">
+        <div className="max-w-[1280px] mx-auto">
+          <div className="text-center mb-10">
+            <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">Cách hoạt động</span>
+            <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+              4 bước đơn giản — tự động hoàn toàn
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {HOW_IT_WORKS.map((step, idx) => (
+              <div key={step.step} className="relative card p-5">
+                {idx < HOW_IT_WORKS.length - 1 && (
+                  <div className="hidden lg:block absolute top-8 left-full w-5 h-0.5 bg-green-200 z-10" aria-hidden="true" />
+                )}
+                <div className="text-2xl font-black text-green-100 mb-3 font-mono-tech">{step.step}</div>
+                <h3 className="font-bold text-gray-900 text-sm mb-1.5">{step.title}</h3>
+                <p className="text-gray-400 text-xs leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── ALERT BANNER ────────────────────────────────────────────────── */}
       <AlertBanner state={state} />
 
@@ -282,30 +307,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ────────────────────────────────────────────────── */}
-      <section className="w-full py-16 px-4 bg-[#F7F8FA]" aria-label="How it works">
-        <div className="max-w-[1280px] mx-auto">
-          <div className="text-center mb-10">
-            <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">Cách hoạt động</span>
-            <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-              4 bước đơn giản — tự động hoàn toàn
-            </h2>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {HOW_IT_WORKS.map((step, idx) => (
-              <div key={step.step} className="relative card p-5">
-                {idx < HOW_IT_WORKS.length - 1 && (
-                  <div className="hidden lg:block absolute top-8 left-full w-5 h-0.5 bg-green-200 z-10" aria-hidden="true" />
-                )}
-                <div className="text-2xl font-black text-green-100 mb-3 font-mono-tech">{step.step}</div>
-                <h3 className="font-bold text-gray-900 text-sm mb-1.5">{step.title}</h3>
-                <p className="text-gray-400 text-xs leading-relaxed">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ── SOCIAL PROOF / STATS ────────────────────────────────────────── */}
       <section className="w-full py-12 px-4 bg-green-600" aria-label="Statistics">
