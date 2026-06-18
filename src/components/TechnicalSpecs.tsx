@@ -2,104 +2,125 @@
 
 import React from "react";
 
+const specs = [
+  {
+    tag: "PHẦN CỨNG",
+    title: "Vỏ chống ngưng tụ Dual-Chamber",
+    desc: "Thiết kế ABS/PETG chuyên dụng (10×7×5cm) ngăn ngưng tụ nước trong môi trường lạnh.",
+    details: [
+      ["Buồng kín (Sealed Core)", "ESP32 + Pin Li-ion (IP67)"],
+      ["Buồng hở (Breathable)", "Cảm biến MQ-135 đo Ethylene"],
+      ["Màng lọc bảo vệ", "ePTFE chống nước ngưng tụ"],
+    ],
+    color: "#DC2626",
+    bg: "#FEF2F2",
+    icon: "🔧",
+  },
+  {
+    tag: "NĂNG LƯỢNG",
+    title: "Tối ưu hóa Deep Sleep",
+    desc: "Chu kỳ ngủ thông minh giúp pin Li-ion 18650 hoạt động 3–4 tuần liên tục trong container lạnh.",
+    details: [
+      ["Thời gian ngủ (Deep Sleep)", "15 phút / chu kỳ"],
+      ["Làm nóng cảm biến (Warm-up)", "45 giây"],
+      ["Truyền tin (ESP-NOW)", "2 giây / lần"],
+    ],
+    color: "#D97706",
+    bg: "#FFFBEB",
+    icon: "🔋",
+  },
+  {
+    tag: "KẾT NỐI",
+    title: "Mesh ESP-NOW trong Faraday Cage",
+    desc: "Giao thức không dây xuyên vách thép container. Dữ liệu gửi Cloud qua 4G LTE, chuẩn MQTT.",
+    details: [
+      ["Băng tần kết nối", "2.4 GHz (ESP-NOW Mesh)"],
+      ["Gateway điều khiển", "4G LTE (A7670C SIM)"],
+      ["Giao thức Cloud", "MQTT JSON payloads"],
+    ],
+    color: "#2563EB",
+    bg: "#EFF6FF",
+    icon: "📡",
+  },
+];
+
 export default function TechnicalSpecs() {
   return (
-    <div className="w-full border border-neutral-800 bg-[#0F0F0F] p-4 flex flex-col gap-6 font-mono mt-6">
+    <div className="card-flat p-5 flex flex-col gap-5">
       {/* Header */}
-      <div className="border-b border-neutral-800 pb-2 flex justify-between items-center">
-        <span className="text-xs uppercase tracking-widest text-neutral-400 font-bold">
-          [ 03 / BẢN VẼ KỸ THUẬT VÀ ĐIỀU HÀNH PHẦN CỨNG ]
+      <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+        <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+          Thông số kỹ thuật phần cứng
+        </h2>
+        <span className="text-[10px] font-mono-tech text-gray-400 border border-gray-200 px-2 py-0.5 rounded">
+          REV 2.4 · IP67
         </span>
-        <span className="text-xs text-neutral-500 font-tech">REV 2.4 / IP67 MESH SYSTEM</span>
       </div>
 
-      {/* Grid Specs */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Chassis section */}
-        <div className="border border-neutral-850 p-4 bg-[#0A0A0A] flex flex-col gap-3">
-          <div className="text-[#FF2A2A] text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-            <span>[#] DUAL-CHAMBER Vỏ chống ngưng tụ</span>
-          </div>
-          <p className="text-xs text-neutral-400 leading-relaxed">
-            Thiết kế vỏ nhựa ABS/PETG chuyên dụng chống chịu lạnh tốt, kích thước tiêu chuẩn 10cm x 7cm x 5cm.
-          </p>
-          <div className="border-t border-neutral-900 pt-2 flex flex-col gap-1.5 text-[10px] text-neutral-500">
-            <div className="flex justify-between">
-              <span>Buồng kín (Sealed Core):</span>
-              <span className="text-neutral-300">ESP32 + Pin (IP67)</span>
+      {/* 3 Spec Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {specs.map((s) => (
+          <article key={s.title} className="card p-4 flex flex-col gap-3" aria-label={s.title}>
+            <div className="flex items-start gap-3">
+              <div
+                className="w-9 h-9 rounded-lg flex items-center justify-center text-lg flex-shrink-0"
+                style={{ background: s.bg }}
+                aria-hidden="true"
+              >
+                {s.icon}
+              </div>
+              <div>
+                <div
+                  className="text-[10px] font-bold uppercase tracking-widest mb-0.5"
+                  style={{ color: s.color }}
+                >
+                  {s.tag}
+                </div>
+                <h3 className="text-sm font-bold text-gray-900 leading-tight">{s.title}</h3>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span>Buồng hở (Breathable):</span>
-              <span className="text-neutral-300">Cảm biến MQ-135</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Màng lọc bảo vệ:</span>
-              <span className="text-neutral-300">ePTFE chống nước ngưng tụ</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Battery Power section */}
-        <div className="border border-neutral-850 p-4 bg-[#0A0A0A] flex flex-col gap-3">
-          <div className="text-[#FF2A2A] text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-            <span>[#] Tối ưu hóa năng lượng Deep Sleep</span>
-          </div>
-          <p className="text-xs text-neutral-400 leading-relaxed">
-            Sử dụng chu kỳ Deep Sleep tối ưu để kéo dài tuổi thọ của pin Li-ion 18650 tiêu chuẩn lên đến 3-4 tuần trong container lạnh.
-          </p>
-          <div className="border-t border-neutral-900 pt-2 flex flex-col gap-1.5 text-[10px] text-neutral-500">
-            <div className="flex justify-between">
-              <span>Thời gian ngủ (Deep Sleep):</span>
-              <span className="text-neutral-300">15 phút</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Làm nóng cảm biến (Warm-up):</span>
-              <span className="text-neutral-300">45 giây</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Truyền tin (ESP-NOW):</span>
-              <span className="text-neutral-300">2 giây</span>
-            </div>
-          </div>
-        </div>
+            <p className="text-xs text-gray-400 leading-relaxed">{s.desc}</p>
 
-        {/* Communication mesh section */}
-        <div className="border border-neutral-850 p-4 bg-[#0A0A0A] flex flex-col gap-3">
-          <div className="text-[#FF2A2A] text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-            <span>[#] Mạng lưới ESP-NOW trong Faraday Cage</span>
-          </div>
-          <p className="text-xs text-neutral-400 leading-relaxed">
-            Tận dụng giao thức không dây ESP-NOW tốc độ cao để giao tiếp đa hướng xuyên qua các điểm mù trong thùng container thép (lồng Faraday).
-          </p>
-          <div className="border-t border-neutral-900 pt-2 flex flex-col gap-1.5 text-[10px] text-neutral-500">
-            <div className="flex justify-between">
-              <span>Băng tần kết nối:</span>
-              <span className="text-neutral-300">2.4 GHz (ESP-NOW)</span>
+            <div className="border-t border-gray-100 pt-2 flex flex-col gap-1.5">
+              {s.details.map(([k, v]) => (
+                <div key={k} className="flex justify-between text-[11px]">
+                  <span className="text-gray-400">{k}</span>
+                  <span className="text-gray-700 font-semibold font-mono-tech">{v}</span>
+                </div>
+              ))}
             </div>
-            <div className="flex justify-between">
-              <span>Gateway điều khiển đầu container:</span>
-              <span className="text-neutral-300">4G LTE (A7670C)</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Giao thức Cloud Broker:</span>
-              <span className="text-neutral-300">MQTT JSON payloads</span>
-            </div>
-          </div>
-        </div>
+          </article>
+        ))}
       </div>
 
-      {/* Dynamic FEFO details */}
-      <div className="border border-neutral-850 bg-[#0A0A0A] p-4 flex flex-col gap-3">
-        <div className="text-white text-xs font-bold uppercase tracking-wider">
-          &gt;&gt; GIAO THỨC ĐỊNH TUYẾN LOGISTICS: DYNAMIC FEFO (FIRST EXPIRED, FIRST OUT)
+      {/* Dynamic FEFO Panel */}
+      <div className="card p-4 bg-gray-50 flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <span className="text-base" aria-hidden="true">🔄</span>
+          <h3 className="text-sm font-bold text-gray-900">
+            Giao thức xuất hàng thông minh: Dynamic FEFO
+          </h3>
+          <span className="text-[10px] bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded-full font-semibold">
+            FIRST EXPIRED · FIRST OUT
+          </span>
         </div>
-        <p className="text-xs text-neutral-400 leading-relaxed">
-          Bằng cách giám sát liên tục chỉ số Ethylene và kết hợp mô hình động học Arrhenius, hệ thống TwinBox AI tự động phân loại và định tuyến phân phối lô hàng nông sản nào có nguy cơ hỏng sớm hơn sẽ được dỡ xuống và tiêu thụ trước (FEFO), thay vì xuất kho theo lô nhập trước xuất trước truyền thống (FIFO). Phương pháp này giúp giảm thiểu hao hụt chuỗi cung ứng nông sản lạnh xuống dưới 10% theo kế hoạch kinh doanh.
+        <p className="text-xs text-gray-500 leading-relaxed">
+          Bằng cách kết hợp dữ liệu Ethylene và mô hình Arrhenius, TwinBox AI tự động xác định lô hàng nào có nguy cơ hỏng sớm hơn và ưu tiên xuất trước — thay vì theo thứ tự nhập kho truyền thống (FIFO). Phương pháp này giúp giảm thiểu hao hụt chuỗi cung ứng xuống dưới <strong className="text-gray-800">10%</strong>.
         </p>
-        <div className="flex flex-wrap gap-4 text-[10px] text-neutral-500 uppercase mt-1">
-          <span>[ ĐỊNH HƯỚNG ĐỘ TINH CẤU TRÚC LỚN ]</span>
-          <span>[ LIÊN KẾT AI VÀ HỆ THỐNG LOGISTICS THỰC TẾ ]</span>
-          <span>[ HIỆU QUẢ CHUỖI CUNG ỨNG CỐ ĐỊNH ]</span>
+        <div className="flex flex-wrap gap-2 mt-1">
+          {[
+            "Định tuyến theo độ tươi thực tế",
+            "Liên kết AI & logistics",
+            "Tối ưu chuỗi cung ứng lạnh",
+          ].map((tag) => (
+            <span
+              key={tag}
+              className="text-[10px] bg-white border border-gray-200 text-gray-500 px-2 py-0.5 rounded-full"
+            >
+              {tag}
+            </span>
+          ))}
         </div>
       </div>
     </div>

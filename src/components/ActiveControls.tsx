@@ -12,34 +12,60 @@ export default function ActiveControls({
   resetSimulation,
 }: ActiveControlsProps) {
   return (
-    <div className="w-full border border-neutral-800 bg-[#0F0F0F] p-4 flex flex-col gap-4 font-mono">
-      <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-        <span className="text-xs uppercase tracking-widest text-neutral-400 font-bold">
-          [ 01 / GIẢ LẬP SỰ CỐ & THỬ NGHIỆM HỆ THỐNG ]
+    <div className="card-flat p-5 flex flex-col gap-4">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+        <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+          Mô phỏng & Kiểm thử hệ thống
+        </h2>
+        <span className="text-[10px] font-semibold text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
+          Chế độ: Tự động
         </span>
-        <span className="text-xs text-[#4AF626] font-tech font-bold">CHẾ ĐỘ: TỰ ĐỘNG (AUTO)</span>
       </div>
 
-      <div className="border border-neutral-800 p-4 bg-[#0A0A0A] flex flex-col gap-3">
-        <span className="text-xs text-neutral-400 uppercase tracking-wider font-bold">
-          Giả lập sự cố nông sản chín
-        </span>
-        <p className="text-[10px] text-neutral-500 leading-relaxed">
-          Nhấn nút bên dưới để kích hoạt sự cố giải phóng khí Ethylene (C2H4) đột ngột từ nông sản chín. Hệ thống giám sát chủ động (Active Actuation) sẽ phát hiện và tự động kích hoạt quạt thông gió cùng hệ thống làm lạnh để hạ nhiệt độ và nồng độ khí độc hại về mức an toàn.
+      {/* Simulation Panel */}
+      <div className="card p-4 bg-gray-50 flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <span className="text-base" aria-hidden="true">🧪</span>
+          <span className="text-sm font-bold text-gray-800">Giả lập sự cố Ethylene</span>
+        </div>
+        <p className="text-xs text-gray-400 leading-relaxed">
+          Nhấn nút bên dưới để kích hoạt sự cố phóng thích khí C2H4 đột ngột. Hệ thống sẽ tự động phát hiện và kích hoạt quạt thông gió + làm lạnh để đưa về mức an toàn.
         </p>
-        <div className="grid grid-cols-1 gap-3 mt-1">
+        <div className="flex flex-col gap-2.5 mt-1">
           <button
+            id="btn-c2h4-spike"
             onClick={triggerC2H4Spike}
-            className="group relative overflow-hidden border border-[#FF2A2A] px-4 py-3 hover:bg-[#FF2A2A]/10 text-xs font-bold text-[#FF2A2A] transition-all cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 rounded-lg py-2.5 px-4 text-sm font-semibold bg-red-50 text-red-600 border border-red-200 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all duration-200 cursor-pointer"
+            aria-label="Kích hoạt giả lập phóng thích khí C2H4"
           >
-            <span className="relative z-10">[ GIẢ LẬP PHÓNG THÍCH KHÍ C2H4 ]</span>
+            <span aria-hidden="true">⚠️</span>
+            Giả lập phóng thích khí C2H4
           </button>
           <button
+            id="btn-reset"
             onClick={resetSimulation}
-            className="border border-neutral-700 px-4 py-3 hover:bg-neutral-800 text-xs font-bold text-neutral-300 transition-all cursor-pointer"
+            className="btn-secondary w-full text-sm"
+            aria-label="Đặt lại hệ thống về trạng thái bình thường"
           >
-            RESET HỆ THỐNG GIAO DIỆN
+            ↺ Đặt lại hệ thống
           </button>
+        </div>
+      </div>
+
+      {/* Info notes */}
+      <div className="text-[11px] text-gray-400 leading-relaxed border-t border-gray-100 pt-3 space-y-1">
+        <div className="flex gap-1.5">
+          <span className="text-green-500 flex-shrink-0" aria-hidden="true">✓</span>
+          <span>Quạt và máy lạnh tự kích hoạt khi C2H4 &gt; 25 ppm</span>
+        </div>
+        <div className="flex gap-1.5">
+          <span className="text-green-500 flex-shrink-0" aria-hidden="true">✓</span>
+          <span>Tần số telemetry tự chuyển 15 phút → 1 phút khi khẩn cấp</span>
+        </div>
+        <div className="flex gap-1.5">
+          <span className="text-blue-500 flex-shrink-0" aria-hidden="true">ℹ</span>
+          <span>Đây là bảng mô phỏng — dữ liệu thực lấy từ cảm biến node IoT</span>
         </div>
       </div>
     </div>

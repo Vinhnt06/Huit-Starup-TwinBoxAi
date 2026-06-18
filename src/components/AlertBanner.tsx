@@ -13,32 +13,46 @@ export default function AlertBanner({ state }: AlertBannerProps) {
   const isCritical = state.nodeStatus === "CRITICAL";
 
   return (
-    <div className={`w-full border-y border-[#FF2A2A] px-4 py-2 flex items-center justify-between overflow-hidden animate-pulse ${
-      isCritical ? "bg-[#FF2A2A] text-[#0A0A0A]" : "bg-[#1A0C0C] text-[#FF2A2A]"
-    }`}>
-      <div className="flex items-center gap-4 text-xs md:text-sm font-bold tracking-widest">
-        <span>[!] CẢNH BÁO: TRẠNG THÁI {state.nodeStatus}</span>
-        <span className="hidden md:inline">{"///"}</span>
+    <div
+      role="alert"
+      aria-live="assertive"
+      className={`w-full px-4 py-2.5 flex items-center justify-between gap-3 ${
+        isCritical
+          ? "bg-red-500 text-white"
+          : "bg-amber-50 text-amber-800 border-b border-amber-200"
+      }`}
+    >
+      <div className="flex items-center gap-3 text-xs sm:text-sm font-semibold">
+        <span
+          className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[11px] font-black flex-shrink-0 ${
+            isCritical ? "bg-white text-red-500" : "bg-amber-200 text-amber-700"
+          }`}
+          aria-hidden="true"
+        >
+          !
+        </span>
+        <span className="font-bold">
+          {isCritical ? "⚠ Cảnh báo nghiêm trọng" : "⚡ Phát hiện bất thường"}:
+        </span>
         {isCritical ? (
           state.dslHours <= 0 ? (
-            <span className="hidden md:inline">
-              CẢNH BÁO: HẠN SỬ DỤNG AN TOÀN ĐÃ HẾT (DSL = 0 GIỜ) &gt;&gt; LÔ HÀNG CẦN TIÊU THỦY HOẶC XỬ LÝ KHẨN CẤP
-            </span>
+            <span>Thời hạn tươi đã hết (DSL = 0 giờ) — Lô hàng cần được xử lý khẩn cấp</span>
           ) : (
-            <span className="hidden md:inline">
-              NỒNG ĐỘ C2H4 VƯỢT NGƯỠNG AN TOÀN ({state.c2h4} ppm) &gt;&gt; KÍCH HOẠT TẦN SỐ KHẨN CẤP (1 PHÚT)
+            <span>
+              Nồng độ C2H4 vượt ngưỡng ({state.c2h4} ppm &gt; 25 ppm) — Đã kích hoạt tần số khẩn cấp
             </span>
           )
         ) : (
-          <span className="hidden md:inline">
-            PHÁT HIỆN BIẾN ĐỘNG MÔI TRƯỜNG: NỒNG ĐỘ C2H4 / NHIỆT ĐỘ TĂNG
-          </span>
+          <span>Biến động môi trường — Nồng độ C2H4 / nhiệt độ đang tăng</span>
         )}
       </div>
-      <div className="flex items-center gap-2 text-xs md:text-sm font-bold">
-        <span>THÔNG GIÓ: {state.fanRelay === "ON" ? "BẬT" : "TẮT"}</span>
-        <span>|</span>
-        <span>HỆ THỐNG PHÒNG VỆ CHỦ ĐỘNG</span>
+
+      <div className={`flex items-center gap-2 text-xs font-semibold flex-shrink-0 ${isCritical ? "text-red-100" : "text-amber-600"}`}>
+        <span
+          className={`w-1.5 h-1.5 rounded-full ${isCritical ? "bg-red-200" : "bg-amber-400"} animate-pulse`}
+          aria-hidden="true"
+        />
+        Quạt: {state.fanRelay === "ON" ? "Đang chạy" : "Tắt"}
       </div>
     </div>
   );

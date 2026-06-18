@@ -113,15 +113,15 @@ function SensorNode({
       {/* Small ceiling mounting flange plate */}
       <mesh position={[0, 1.8 - position[1], 0]}>
         <cylinderGeometry args={[0.15, 0.15, 0.02, 12]} />
-        <meshStandardMaterial color="#222" metalness={0.8} roughness={0.3} />
+        <meshStandardMaterial color="#94A3B8" metalness={0.6} roughness={0.3} />
       </mesh>
 
       {/* Enclosure Rotation & Structure */}
       <group rotation={[0.05, hovered ? Math.PI / 4 : 0.2, 0.05]}>
-        {/* Main core sealed body - ABS Industrial Plastic (Dark Grey) */}
+        {/* Main core sealed body - ABS Industrial Plastic (Light Grey) */}
         <mesh>
           <boxGeometry args={[0.3, 0.2, 0.45]} />
-          <meshStandardMaterial color={hovered ? "#333333" : "#1E1E1E"} roughness={0.5} metalness={0.1} />
+          <meshStandardMaterial color={hovered ? "#94A3B8" : "#CBD5E1"} roughness={0.5} metalness={0.15} />
         </mesh>
 
         {/* Protective rugged bumper - High-visibility Industrial Orange */}
@@ -133,7 +133,7 @@ function SensorNode({
         {/* Breathable Chamber Cap (Ethylene sensor compartment) */}
         <mesh position={[0, 0.1, 0.08]}>
           <boxGeometry args={[0.16, 0.03, 0.16]} />
-          <meshStandardMaterial color="#3A3A3A" roughness={0.9} />
+          <meshStandardMaterial color="#94A3B8" roughness={0.9} />
         </mesh>
 
         {/* Pulsing Status LED Indicator */}
@@ -145,7 +145,7 @@ function SensorNode({
         {/* Flexible Whip Antenna */}
         <mesh position={[-0.1, 0.1, -0.16]} rotation={[-0.15, 0, -0.1]}>
           <cylinderGeometry args={[0.006, 0.006, 0.22, 8]} />
-          <meshStandardMaterial color="#111111" roughness={0.2} />
+          <meshStandardMaterial color="#475569" roughness={0.2} />
         </mesh>
 
         {/* Ground projection status ring */}
@@ -250,13 +250,13 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
 
   return (
     <group>
-      {/* Semi-transparent Container Wall Grid */}
+      {/* Semi-transparent Container Wall */}
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[width, height, length]} />
         <meshBasicMaterial
-          color="#121212"
+          color="#C8D6E5"
           transparent
-          opacity={0.35}
+          opacity={0.22}
           side={THREE.DoubleSide}
         />
       </mesh>
@@ -270,7 +270,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
           [-width / 2, height / 2, -length / 2],
           [-width / 2, -height / 2, -length / 2],
         ]}
-        color="#FF2A2A"
+        color="#16A34A"
         lineWidth={1.5}
       />
       <Line
@@ -281,7 +281,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
           [-width / 2, height / 2, length / 2],
           [-width / 2, -height / 2, length / 2],
         ]}
-        color="#FF2A2A"
+        color="#16A34A"
         lineWidth={1.5}
       />
       {/* Longitudinal lines */}
@@ -290,7 +290,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
           [-width / 2, -height / 2, -length / 2],
           [-width / 2, -height / 2, length / 2],
         ]}
-        color="rgba(234, 234, 234, 0.4)"
+        color="#94A3B8"
         lineWidth={1}
       />
       <Line
@@ -298,7 +298,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
           [width / 2, -height / 2, -length / 2],
           [width / 2, -height / 2, length / 2],
         ]}
-        color="rgba(234, 234, 234, 0.4)"
+        color="#94A3B8"
         lineWidth={1}
       />
       <Line
@@ -306,7 +306,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
           [-width / 2, height / 2, -length / 2],
           [-width / 2, height / 2, length / 2],
         ]}
-        color="rgba(234, 234, 234, 0.4)"
+        color="#94A3B8"
         lineWidth={1}
       />
       <Line
@@ -314,7 +314,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
           [width / 2, height / 2, -length / 2],
           [width / 2, height / 2, length / 2],
         ]}
-        color="rgba(234, 234, 234, 0.4)"
+        color="#94A3B8"
         lineWidth={1}
       />
 
@@ -326,7 +326,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
               [-width / 2, -height / 2, 0],
               [width / 2, -height / 2, 0],
             ]}
-            color="rgba(234,234,234,0.1)"
+            color="#CBD5E1"
             lineWidth={1}
           />
           <Line
@@ -334,7 +334,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
               [-width / 2, height / 2, 0],
               [width / 2, height / 2, 0],
             ]}
-            color="rgba(234,234,234,0.1)"
+            color="#CBD5E1"
             lineWidth={1}
           />
           <Line
@@ -342,7 +342,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
               [0, -height / 2, 0],
               [0, height / 2, 0],
             ]}
-            color="rgba(234,234,234,0.05)"
+            color="#E2E8F0"
             lineWidth={1}
           />
         </group>
@@ -400,59 +400,58 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
 
   if (!mounted) {
     return (
-      <div className="w-full h-[320px] md:h-[400px] bg-[#0A0A0A] border border-neutral-800 flex items-center justify-center font-mono text-xs text-neutral-500">
-        &gt;&gt; ĐANG KHỞI ĐỘNG HỆ THỐNG CARRIER 3D...
+      <div className="w-full h-[320px] md:h-[400px] bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-center text-xs text-gray-400">
+        Đang khởi động mô hình 3D...
       </div>
     );
   }
 
   return (
-    <div className="w-full border border-neutral-800 bg-[#0A0A0A] p-4 flex flex-col gap-4 font-mono relative">
-      <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-        <span className="text-xs uppercase tracking-widest text-neutral-400 font-bold">
-          [ 02 / MÔ PHỎNG LAYOUT CARRIER 3D CONTAINER LẠNH ]
-        </span>
-        <span className="text-[10px] text-neutral-500">[ CHUỘT TRÁI: XOAY | CHUỘT GIỮA: ZOOM ]</span>
+    <div className="card-flat p-5 flex flex-col gap-4 relative">
+      <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+        <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+          Mô phỏng 3D Container Lạnh
+        </h2>
+        <span className="text-[10px] text-gray-400">Kéo để xoay · Cuộn để zoom</span>
       </div>
 
-      <div className="w-full h-[320px] md:h-[400px] border border-neutral-900 bg-[#050505] relative overflow-hidden">
-        <Canvas camera={{ position: [7, 5, 8], fov: 40 }}>
-          <ambientLight intensity={0.6} />
-          <pointLight position={[10, 10, 10]} intensity={1.5} />
+      <div className="w-full h-[320px] md:h-[400px] bg-gradient-to-br from-slate-50 to-blue-50 rounded-lg relative overflow-hidden border border-gray-100">
+        <Canvas camera={{ position: [7, 5, 8], fov: 40 }} gl={{ alpha: true }}>
+          <color attach="background" args={["#F8FAFC"]} />
+          <ambientLight intensity={1.2} />
+          <directionalLight position={[8, 10, 8]} intensity={1.0} />
+          <pointLight position={[-5, 5, -5]} intensity={0.6} color="#E0F2FE" />
           <ContainerModel state={state} onNodeSelect={setSelectedNode} />
           <OrbitControls enableZoom={true} maxPolarAngle={Math.PI / 2} minDistance={4} maxDistance={15} />
         </Canvas>
 
-        {/* HUD Info Box inside WebGL layer */}
-        <div className="absolute bottom-2 left-2 border border-neutral-800 bg-[#0A0A0A] bg-opacity-95 p-3 text-[10px] text-neutral-400 max-w-[280px]">
-          <div className="font-bold text-white uppercase mb-1 border-b border-neutral-800 pb-1">
-            {selectedNode.includes("THÙNG") ? "THÔNG TIN LÔ NÔNG SẢN" : "THÔNG TIN SENSOR NODE"}
+        {/* HUD Info Box — light card style */}
+        <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-lg shadow-md p-3 text-[11px] text-gray-600 max-w-[260px]">
+          <div className="font-bold text-gray-800 text-xs mb-1.5 border-b border-gray-100 pb-1.5">
+            {selectedNode.includes("THÙNG") ? "📦 Thông tin lô nông sản" : "📡 Thông tin Sensor Node"}
           </div>
-          <div className="text-[#4AF626] font-bold">{selectedNode}</div>
-          <div className="mt-1 leading-normal">
+          <div className="text-green-600 font-semibold mb-1 text-[11px] leading-tight">{selectedNode}</div>
+          <div className="leading-relaxed text-gray-500">
             {selectedNode.includes("NODE 01") ? (
               <>
-                Trạng thái: {state.nodeStatus === "NORMAL" ? "BÌNH THƯỜNG" : state.nodeStatus === "WARNING" ? "CẢNH BÁO" : "NGUY HIỂM"}<br />
-                C2H4: {state.c2h4} ppm | Temp: {state.temperatureAmbient}°C<br />
-                Độ ẩm: {state.humidity}% RH<br />
-                Giao thức: Mesh (ESP-NOW)
+                Trạng thái: <span className={state.nodeStatus === "NORMAL" ? "text-green-600 font-semibold" : "text-red-500 font-semibold"}>{state.nodeStatus === "NORMAL" ? "Bình thường" : state.nodeStatus === "WARNING" ? "Cảnh báo" : "Nguy hiểm"}</span><br />
+                C2H4: {state.c2h4} ppm · {state.temperatureAmbient}°C<br />
+                Độ ẩm: {state.humidity}% RH · ESP-NOW
               </>
             ) : selectedNode.includes("NODE 02") || selectedNode.includes("NODE 03") ? (
               <>
-                Trạng thái: BÌNH THƯỜNG (Node phụ)<br />
-                C2H4: 1.5 ppm | Temp: 3.9°C<br />
-                Độ ẩm: 85% RH<br />
-                Giao thức: Mesh (ESP-NOW)
+                Trạng thái: <span className="text-green-600 font-semibold">Bình thường</span><br />
+                C2H4: 1.5 ppm · 3.9°C<br />
+                Độ ẩm: 85% RH · ESP-NOW
               </>
             ) : selectedNode.includes("THÙNG") ? (
               <>
                 Lô hàng: Táo đỏ Fuji nhập khẩu<br />
-                Nhiệt độ tối ưu: 0°C - 3°C<br />
-                Nhạy Ethylene: Cao (Dễ bị chín ép)<br />
-                Độ ẩm tối ưu: 90% - 95% RH
+                Nhiệt độ tối ưu: 0°C – 3°C<br />
+                Độ ẩm tối ưu: 90% – 95% RH
               </>
             ) : (
-              <>Không có thông tin chi tiết</>
+              <>Nhấn vào node hoặc thùng để xem thông tin</>
             )}
           </div>
         </div>
