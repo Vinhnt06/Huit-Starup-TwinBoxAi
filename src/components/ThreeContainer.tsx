@@ -254,9 +254,9 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[width, height, length]} />
         <meshBasicMaterial
-          color="#C8D6E5"
+          color="#121212"
           transparent
-          opacity={0.22}
+          opacity={0.35}
           side={THREE.DoubleSide}
         />
       </mesh>
@@ -270,7 +270,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
           [-width / 2, height / 2, -length / 2],
           [-width / 2, -height / 2, -length / 2],
         ]}
-        color="#16A34A"
+        color="#FF2A2A"
         lineWidth={1.5}
       />
       <Line
@@ -281,7 +281,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
           [-width / 2, height / 2, length / 2],
           [-width / 2, -height / 2, length / 2],
         ]}
-        color="#16A34A"
+        color="#FF2A2A"
         lineWidth={1.5}
       />
       {/* Longitudinal lines */}
@@ -290,7 +290,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
           [-width / 2, -height / 2, -length / 2],
           [-width / 2, -height / 2, length / 2],
         ]}
-        color="#94A3B8"
+        color="rgba(234, 234, 234, 0.4)"
         lineWidth={1}
       />
       <Line
@@ -298,7 +298,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
           [width / 2, -height / 2, -length / 2],
           [width / 2, -height / 2, length / 2],
         ]}
-        color="#94A3B8"
+        color="rgba(234, 234, 234, 0.4)"
         lineWidth={1}
       />
       <Line
@@ -306,7 +306,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
           [-width / 2, height / 2, -length / 2],
           [-width / 2, height / 2, length / 2],
         ]}
-        color="#94A3B8"
+        color="rgba(234, 234, 234, 0.4)"
         lineWidth={1}
       />
       <Line
@@ -314,7 +314,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
           [width / 2, height / 2, -length / 2],
           [width / 2, height / 2, length / 2],
         ]}
-        color="#94A3B8"
+        color="rgba(234, 234, 234, 0.4)"
         lineWidth={1}
       />
 
@@ -326,7 +326,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
               [-width / 2, -height / 2, 0],
               [width / 2, -height / 2, 0],
             ]}
-            color="#CBD5E1"
+            color="rgba(234,234,234,0.1)"
             lineWidth={1}
           />
           <Line
@@ -334,7 +334,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
               [-width / 2, height / 2, 0],
               [width / 2, height / 2, 0],
             ]}
-            color="#CBD5E1"
+            color="rgba(234,234,234,0.1)"
             lineWidth={1}
           />
           <Line
@@ -342,7 +342,7 @@ function ContainerModel({ state, onNodeSelect }: { state: TelemetryState; onNode
               [0, -height / 2, 0],
               [0, height / 2, 0],
             ]}
-            color="#E2E8F0"
+            color="rgba(234,234,234,0.05)"
             lineWidth={1}
           />
         </group>
@@ -415,12 +415,11 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
         <span className="text-[10px] text-gray-400">Kéo để xoay · Cuộn để zoom</span>
       </div>
 
-      <div className="w-full h-[320px] md:h-[400px] bg-gradient-to-br from-slate-50 to-blue-50 rounded-lg relative overflow-hidden border border-gray-100">
-        <Canvas camera={{ position: [7, 5, 8], fov: 40 }} gl={{ alpha: true }}>
-          <color attach="background" args={["#F8FAFC"]} />
-          <ambientLight intensity={1.2} />
-          <directionalLight position={[8, 10, 8]} intensity={1.0} />
-          <pointLight position={[-5, 5, -5]} intensity={0.6} color="#E0F2FE" />
+      <div className="w-full h-[320px] md:h-[400px] rounded-lg relative overflow-hidden border border-gray-200" style={{ background: '#0A0A0A' }}>
+        <Canvas camera={{ position: [7, 5, 8], fov: 40 }}>
+          <color attach="background" args={["#0A0A0A"]} />
+          <ambientLight intensity={0.6} />
+          <pointLight position={[10, 10, 10]} intensity={1.5} />
           <ContainerModel state={state} onNodeSelect={setSelectedNode} />
           <OrbitControls enableZoom={true} maxPolarAngle={Math.PI / 2} minDistance={4} maxDistance={15} />
         </Canvas>
