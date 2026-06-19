@@ -10,14 +10,27 @@ interface ThreeContainerProps {
   state: TelemetryState;
 }
 
+// Device info type
+export interface DeviceInfo {
+  id: string;
+  name: string;
+  icon: string;
+  specs: { label: string; value: string }[];
+}
+
 // ── ESP32 PCB Board ────────────────────────────────────────────────────────
-function ESP32Board({ position }: { position: [number, number, number] }) {
+function ESP32Board({ position, onClick }: { position: [number, number, number]; onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
   return (
     <group position={position}>
+      {/* Click zone */}
+      <mesh onClick={(e) => { e.stopPropagation(); onClick(); }} onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }} onPointerOut={(e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; }} visible={false}>
+        <boxGeometry args={[0.7, 0.2, 0.4]} />
+      </mesh>
       {/* PCB main board */}
       <mesh>
         <boxGeometry args={[0.55, 0.03, 0.28]} />
-        <meshStandardMaterial color="#1A5C2A" roughness={0.4} metalness={0.1} />
+        <meshStandardMaterial color={hovered ? "#22AA44" : "#1A5C2A"} roughness={0.4} metalness={0.1} />
       </mesh>
       {/* CPU chip */}
       <mesh position={[0, 0.025, 0]}>
@@ -54,16 +67,23 @@ function ESP32Board({ position }: { position: [number, number, number] }) {
 function RelayModule({
   position,
   active,
+  onClick,
 }: {
   position: [number, number, number];
   active: boolean;
+  onClick: () => void;
 }) {
+  const [hovered, setHovered] = useState(false);
   return (
     <group position={position}>
+      {/* Click zone */}
+      <mesh onClick={(e) => { e.stopPropagation(); onClick(); }} onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }} onPointerOut={(e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; }} visible={false}>
+        <boxGeometry args={[0.5, 0.3, 0.3]} />
+      </mesh>
       {/* Relay PCB */}
       <mesh>
         <boxGeometry args={[0.4, 0.03, 0.18]} />
-        <meshStandardMaterial color="#1A3A6A" roughness={0.4} />
+        <meshStandardMaterial color={hovered ? "#2255AA" : "#1A3A6A"} roughness={0.4} />
       </mesh>
       {/* Relay coil x2 */}
       {[-0.1, 0.1].map((x, i) => (
@@ -91,13 +111,18 @@ function RelayModule({
 }
 
 // ── Evaporator / Cooling Unit ──────────────────────────────────────────────
-function CoolingUnit({ position }: { position: [number, number, number] }) {
+function CoolingUnit({ position, onClick }: { position: [number, number, number]; onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
   return (
     <group position={position}>
+      {/* Click zone */}
+      <mesh onClick={(e) => { e.stopPropagation(); onClick(); }} onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }} onPointerOut={(e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; }} visible={false}>
+        <boxGeometry args={[2.4, 0.5, 0.7]} />
+      </mesh>
       {/* Main housing */}
       <mesh>
         <boxGeometry args={[2.2, 0.35, 0.5]} />
-        <meshStandardMaterial color="#C0C8D0" roughness={0.3} metalness={0.4} />
+        <meshStandardMaterial color={hovered ? "#D8E8F0" : "#C0C8D0"} roughness={0.3} metalness={0.4} />
       </mesh>
       {/* Fin array */}
       {Array.from({ length: 12 }).map((_, i) => (
@@ -129,10 +154,13 @@ function CoolingUnit({ position }: { position: [number, number, number] }) {
 function Fan({
   active,
   position,
+  onClick,
 }: {
   active: boolean;
   position: [number, number, number];
+  onClick: () => void;
 }) {
+  const [hovered, setHovered] = useState(false);
   const bladeRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
@@ -143,6 +171,10 @@ function Fan({
 
   return (
     <group position={position}>
+      {/* Click zone */}
+      <mesh onClick={(e) => { e.stopPropagation(); onClick(); }} onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }} onPointerOut={(e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; }} visible={false}>
+        <cylinderGeometry args={[0.9, 0.9, 0.2, 16]} />
+      </mesh>
       {/* Housing ring */}
       <mesh>
         <ringGeometry args={[0.72, 0.82, 32]} />
@@ -354,11 +386,11 @@ function ContainerModel({
       ))}
 
       {/* ── Cooling unit (evaporator) at ceiling front ── */}
-      <CoolingUnit position={[0, H / 2 - 0.3, -L / 2 + 0.6]} />
+      <CoolingUnit position={[0, H / 2 - 0.3, -L / 2 + 0.6]} onClick={() => onNodeSelect("COOLING")} />
 
       {/* ── Fans ── */}
-      <Fan active={isFanActive} position={[-1, 0.8, -L / 2 + 0.08]} />
-      <Fan active={isFanActive} position={[1, 0.8, -L / 2 + 0.08]} />
+      <Fan active={isFanActive} position={[-1, 0.8, -L / 2 + 0.08]} onClick={() => onNodeSelect("FAN1")} />
+      <Fan active={isFanActive} position={[1, 0.8, -L / 2 + 0.08]} onClick={() => onNodeSelect("FAN2")} />
 
       {/* ── Control box on side wall (contains ESP32 + Relay) ── */}
       {/* Control box housing */}
@@ -372,9 +404,9 @@ function ContainerModel({
         <meshStandardMaterial color="#3A3A3A" roughness={0.3} />
       </mesh>
       {/* ESP32 inside box */}
-      <ESP32Board position={[W / 2 - 0.09, 0.7, -L / 2 + 1.5]} />
+      <ESP32Board position={[W / 2 - 0.09, 0.7, -L / 2 + 1.5]} onClick={() => onNodeSelect("ESP32")} />
       {/* Relay module below ESP32 */}
-      <RelayModule position={[W / 2 - 0.09, 0.45, -L / 2 + 1.5]} active={isFanActive} />
+      <RelayModule position={[W / 2 - 0.09, 0.45, -L / 2 + 1.5]} active={isFanActive} onClick={() => onNodeSelect("RELAY")} />
 
       {/* Wire: Relay → Fan 1 */}
       <Line
@@ -397,13 +429,13 @@ function ContainerModel({
 
       {/* ── Cargo crates ── */}
       {crates.map((c, i) => (
-        <CargoBox key={i} position={c.pos} onClick={() => onNodeSelect(c.label)} />
+        <CargoBox key={i} position={c.pos} onClick={() => onNodeSelect(`BOX${i + 1}`)} />
       ))}
 
       {/* ── Sensor Nodes ── */}
-      <SensorNode position={[-0.8, -0.4, -2.5]} status={state.nodeStatus} onClick={() => onNodeSelect("NODE 01 (Vùng trước — Gần quạt)")} />
-      <SensorNode position={[0.8, 0.2, 0]} status="NORMAL" onClick={() => onNodeSelect("NODE 02 (Vùng trung tâm)")} />
-      <SensorNode position={[-0.6, -0.2, 2.5]} status="NORMAL" onClick={() => onNodeSelect("NODE 03 (Vùng sau)")} />
+      <SensorNode position={[-0.8, -0.4, -2.5]} status={state.nodeStatus} onClick={() => onNodeSelect("NODE01")} />
+      <SensorNode position={[0.8, 0.2, 0]} status="NORMAL" onClick={() => onNodeSelect("NODE02")} />
+      <SensorNode position={[-0.6, -0.2, 2.5]} status="NORMAL" onClick={() => onNodeSelect("NODE03")} />
     </group>
   );
 }
@@ -411,7 +443,7 @@ function ContainerModel({
 // ── Main Export ────────────────────────────────────────────────────────────
 export default function ThreeContainer({ state }: ThreeContainerProps) {
   const [mounted, setMounted] = useState(false);
-  const [selectedNode, setSelectedNode] = useState("NODE 01 (Vùng trước — Gần quạt)");
+  const [selectedId, setSelectedId] = useState<string>("NODE01");
 
   useEffect(() => {
     const h = requestAnimationFrame(() => setMounted(true));
@@ -426,7 +458,127 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
     );
   }
 
-  const isNode = !selectedNode.includes("THÙNG");
+  // Device info map
+  const deviceMap: Record<string, { icon: string; name: string; rows: [string, string][] }> = {
+    ESP32: {
+      icon: "📶",
+      name: "Vi điều khiển ESP32-WROOM-32",
+      rows: [
+        ["CPU", "Xtensa LX6 240 MHz dual-core"],
+        ["Flash", "4 MB SPI Flash"],
+        ["RAM", "520 KB SRAM"],
+        ["Wi-Fi", "802.11 b/g/n 2.4 GHz"],
+        ["Bluetooth", "BT 4.2 + BLE"],
+        ["GPIO", "34 lập trình được"],
+        ["Nguồn", "3.3V · 500 mA max"],
+        ["Trạng thái", "Online — MQTT connected"],
+      ],
+    },
+    RELAY: {
+      icon: "⚡",
+      name: "Relay Module 2 kênh",
+      rows: [
+        ["Loại", "Optocoupler 5V 2-CH"],
+        ["Tải tối đa", "10A / 250VAC"],
+        ["Đầu ra", "NO / NC / COM"],
+        ["Kênh 1", `Quạt 1 — ${state.fanRelay === "ON" ? "✅ Đóng" : "❌ Mở"}`],
+        ["Kênh 2", `Dàn lạnh — ${state.fanRelay === "ON" ? "✅ Đóng" : "❌ Mở"}`],
+        ["Kích hoạt khi", "C2H4 > 25 ppm"],
+        ["Nguồn", "5V DC từ ESP32"],
+      ],
+    },
+    FAN1: {
+      icon: "🌀",
+      name: "Quạt thông gió #1 (Trái)",
+      rows: [
+        ["Loại", "Axial Fan 220VAC"],
+        ["Công suất", "45W"],
+        ["Lưu lượng", "850 m³/h"],
+        ["Tốc độ", state.fanRelay === "ON" ? "1450 RPM" : "0 RPM (Standby)"],
+        ["Trạng thái", state.fanRelay === "ON" ? "🟢 Đang chạy" : "🔴 Dừng"],
+        ["Điều khiển bởi", "Relay kênh 1 ← ESP32"],
+      ],
+    },
+    FAN2: {
+      icon: "🌀",
+      name: "Quạt thông gió #2 (Phải)",
+      rows: [
+        ["Loại", "Axial Fan 220VAC"],
+        ["Công suất", "45W"],
+        ["Lưu lượng", "850 m³/h"],
+        ["Tốc độ", state.fanRelay === "ON" ? "1450 RPM" : "0 RPM (Standby)"],
+        ["Trạng thái", state.fanRelay === "ON" ? "🟢 Đang chạy" : "🔴 Dừng"],
+        ["song song với", "Quạt #1 — cùng relay"],
+      ],
+    },
+    COOLING: {
+      icon: "❄️",
+      name: "Dàn lạnh Evaporator",
+      rows: [
+        ["Loại", "Fin-and-Tube Evaporator"],
+        ["Gas lạnh", "R404A / R134a"],
+        ["Nhiệt độ mục tiêu", "0°C – 4°C"],
+        ["Nhiệt độ hiện tại", `${state.temperatureAmbient}°C`],
+        ["Số fin", "12 thanh nhôm"],
+        ["Ống coolant", "Xanh = lạnh vào · Đỏ = nhiệt ra"],
+        ["Trạng thái", state.fanRelay === "ON" ? "🟢 Công suất cao" : "🟡 Standby"],
+      ],
+    },
+    NODE01: {
+      icon: "📡",
+      name: "Sensor Node 01 — Vùng trước",
+      rows: [
+        ["Ethylene (C2H4)", `${state.c2h4} ppm`],
+        ["Nhiệt độ", `${state.temperatureAmbient}°C`],
+        ["Độ ẩm", `${state.humidity}% RH`],
+        ["Giao thức", "Mesh ESP-NOW"],
+        ["Trạng thái", state.nodeStatus === "NORMAL" ? "🟢 Bình thường" : state.nodeStatus === "WARNING" ? "🟡 Cảnh báo" : "🔴 Nguy hiểm"],
+        ["Vị trí", "Vùng A — Gần quạt"],
+      ],
+    },
+    NODE02: {
+      icon: "📡",
+      name: "Sensor Node 02 — Trung tâm",
+      rows: [
+        ["Ethylene (C2H4)", "1.5 ppm"],
+        ["Nhiệt độ", "3.9°C"],
+        ["Độ ẩm", "85% RH"],
+        ["Giao thức", "Mesh ESP-NOW"],
+        ["Trạng thái", "🟢 Bình thường"],
+        ["Vị trí", "Vùng B — Giữa container"],
+      ],
+    },
+    NODE03: {
+      icon: "📡",
+      name: "Sensor Node 03 — Phía sau",
+      rows: [
+        ["Ethylene (C2H4)", "1.2 ppm"],
+        ["Nhiệt độ", "4.1°C"],
+        ["Độ ẩm", "87% RH"],
+        ["Giao thức", "Mesh ESP-NOW"],
+        ["Trạng thái", "🟢 Bình thường"],
+        ["Vị trí", "Vùng C — Đuôi container"],
+      ],
+    },
+  };
+
+  // Add cargo boxes
+  for (let i = 1; i <= 8; i++) {
+    deviceMap[`BOX${i}`] = {
+      icon: "📦",
+      name: `Thùng Táo Đỏ #0${i}`,
+      rows: [
+        ["Hàng hóa", "Táo đỏ Fuji nhập khẩu"],
+        ["Nhiệt độ tối ưu", "0°C – 3°C"],
+        ["Độ ẩm tối ưu", "90% – 95% RH"],
+        ["Nhạy Ethylene", "CAO — Dễ bị chín ép"],
+        ["Tối đa C2H4", "< 10 ppm"],
+        ["Hạn dùng ước tính", `${state.dslHours > 0 ? state.dslHours : 0} giờ`],
+      ],
+    };
+  }
+
+  const selected = deviceMap[selectedId] ?? deviceMap["NODE01"];
 
   return (
     <div className="card-flat p-5 flex flex-col gap-4 relative">
@@ -446,7 +598,7 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
           <ambientLight intensity={0.7} />
           <pointLight position={[10, 10, 10]} intensity={1.8} />
           <pointLight position={[-8, 4, -6]} intensity={0.8} color="#88AAFF" />
-          <ContainerModel state={state} onNodeSelect={setSelectedNode} />
+          <ContainerModel state={state} onNodeSelect={(id) => setSelectedId(id)} />
           <OrbitControls enableZoom maxPolarAngle={Math.PI / 1.8} minDistance={5} maxDistance={18} />
         </Canvas>
 
@@ -464,27 +616,23 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
           ))}
         </div>
 
-        {/* HUD */}
-        <div className="absolute bottom-3 left-3 bg-black/80 border border-white/10 rounded-lg p-3 text-[11px] text-gray-300 max-w-[260px]">
-          <div className="font-bold text-white text-xs mb-1.5 border-b border-white/10 pb-1.5">
-            {isNode ? "📡 Sensor Node" : "📦 Lô nông sản"}
+        {/* HUD — detailed specs */}
+        <div className="absolute bottom-3 left-3 bg-black/85 border border-white/10 rounded-xl p-3 text-[11px] text-gray-300 max-w-[270px] backdrop-blur-sm">
+          <div className="flex items-center gap-2 mb-2 border-b border-white/10 pb-2">
+            <span className="text-base">{selected.icon}</span>
+            <span className="font-bold text-white text-xs leading-tight">{selected.name}</span>
           </div>
-          <div className="text-green-400 font-semibold mb-1 leading-tight">{selectedNode}</div>
-          <div className="leading-relaxed text-gray-400">
-            {selectedNode.includes("NODE 01") ? (
-              <>
-                Trạng thái: <span className={state.nodeStatus === "NORMAL" ? "text-green-400" : "text-red-400"}>
-                  {state.nodeStatus === "NORMAL" ? "Bình thường" : state.nodeStatus === "WARNING" ? "Cảnh báo" : "Nguy hiểm"}
-                </span><br />
-                C2H4: {state.c2h4} ppm · {state.temperatureAmbient}°C<br />
-                Độ ẩm: {state.humidity}% · ESP-NOW Mesh
-              </>
-            ) : selectedNode.includes("NODE") ? (
-              <>Trạng thái: <span className="text-green-400">Bình thường</span><br />C2H4: 1.5 ppm · 3.9°C<br />Độ ẩm: 85%</>
-            ) : (
-              <>Lô hàng: Táo đỏ Fuji nhập khẩu<br />Nhiệt độ tối ưu: 0°C – 3°C<br />Độ ẩm tối ưu: 90–95% RH</>
-            )}
-          </div>
+          <table className="w-full">
+            <tbody>
+              {selected.rows.map(([label, value]) => (
+                <tr key={label}>
+                  <td className="text-gray-500 pr-2 pb-0.5 whitespace-nowrap">{label}</td>
+                  <td className="text-gray-200 pb-0.5 font-medium">{value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="mt-2 pt-1 border-t border-white/10 text-[10px] text-gray-600">Click vào thiết bị khác để xem thông số</div>
         </div>
       </div>
 
