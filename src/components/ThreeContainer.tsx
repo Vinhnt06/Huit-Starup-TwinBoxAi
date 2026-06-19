@@ -161,7 +161,7 @@ function ESP32Board({ position, onClick }: { position: [number, number, number];
   );
 }
 
-// ── Relay Module ───────────────────────────────────────────────────────────
+// ── Relay Module (Prominent) ──────────────────────────────────────────────
 function RelayModule({
   position,
   active,
@@ -172,38 +172,144 @@ function RelayModule({
   onClick: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
+  const glowRef = useRef<THREE.Mesh>(null);
+  const led1Ref = useRef<THREE.Mesh>(null);
+  const led2Ref = useRef<THREE.Mesh>(null);
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    // Glow ring pulses red when active
+    if (glowRef.current) {
+      const s = 1 + Math.sin(t * (active ? 3 : 1)) * 0.1;
+      glowRef.current.scale.set(s, 1, s);
+      (glowRef.current.material as THREE.MeshBasicMaterial).opacity =
+        active ? 0.25 + Math.sin(t * 3) * 0.12 : 0.08;
+    }
+    // LED 1 blinks fast when active
+    if (led1Ref.current) {
+      (led1Ref.current.material as THREE.MeshBasicMaterial).color.setHex(
+        active ? (Math.sin(t * 6) > 0 ? 0xff2200 : 0x220000) : 0x111111
+      );
+    }
+    // LED 2 blinks offset
+    if (led2Ref.current) {
+      (led2Ref.current.material as THREE.MeshBasicMaterial).color.setHex(
+        active ? (Math.sin(t * 6 + Math.PI) > 0 ? 0xff2200 : 0x220000) : 0x111111
+      );
+    }
+  });
+
+  const R = 2.0; // scale
   return (
     <group position={position}>
       {/* Click zone */}
-      <mesh onClick={(e) => { e.stopPropagation(); onClick(); }} onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }} onPointerOut={(e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; }} visible={false}>
-        <boxGeometry args={[0.5, 0.3, 0.3]} />
+      <mesh
+        onClick={(e) => { e.stopPropagation(); onClick(); }}
+        onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }}
+        onPointerOut={(e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; }}
+        visible={false}
+      >
+        <boxGeometry args={[0.6 * R, 0.4 * R, 0.35 * R]} />
       </mesh>
-      {/* Relay PCB */}
+
+      {/* Glow halo (red when active, dim when off) */}
+      <mesh ref={glowRef} position={[0, -0.05 * R, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.22 * R, 0.42 * R, 40]} />
+        <meshBasicMaterial
+          color={active ? "#FF3300" : "#884400"}
+          transparent
+          opacity={active ? 0.28 : 0.08}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+
+      {/* PCB base */}
       <mesh>
-        <boxGeometry args={[0.4, 0.03, 0.18]} />
-        <meshStandardMaterial color={hovered ? "#2255AA" : "#1A3A6A"} roughness={0.4} />
+        <boxGeometry args={[0.44 * R, 0.03 * R, 0.22 * R]} />
+        <meshStandardMaterial
+          color={hovered ? "#2A55CC" : "#1A3A8A"}
+          roughness={0.3}
+          metalness={0.2}
+          emissive={active ? "#110033" : "#050510"}
+          emissiveIntensity={0.5}
+        />
       </mesh>
-      {/* Relay coil x2 */}
-      {[-0.1, 0.1].map((x, i) => (
-        <group key={i} position={[x, 0.04, 0]}>
+
+      {/* PCB copper traces */}
+      {[-0.04, 0.04].map((z, i) => (
+        <mesh key={i} position={[0, 0.018 * R, z * R]}>
+          <boxGeometry args={[0.38 * R, 0.003, 0.006 * R]} />
+          <meshBasicMaterial color="#C8860A" />
+        </mesh>
+      ))}
+
+      {/* Relay coil blocks x2 */}
+      {[-0.12 * R, 0.12 * R].map((x, i) => (
+        <group key={i} position={[x, 0.055 * R, 0]}>
+          {/* Main coil body */}
           <mesh>
-            <boxGeometry args={[0.1, 0.05, 0.14]} />
-            <meshStandardMaterial color="#222" roughness={0.5} />
+            <boxGeometry args={[0.13 * R, 0.08 * R, 0.17 * R]} />
+            <meshStandardMaterial
+              color={active ? (hovered ? "#333" : "#1A1A1A") : "#222"}
+              roughness={0.4}
+              emissive={active ? "#220000" : "#000"}
+              emissiveIntensity={0.6}
+            />
+          </mesh>
+          {/* Coil label stripe */}
+          <mesh position={[0, 0.045 * R, 0]}>
+            <boxGeometry args={[0.13 * R, 0.008 * R, 0.04 * R]} />
+            <meshBasicMaterial color={active ? "#FF4400" : "#555"} />
           </mesh>
           {/* Status LED */}
-          <mesh position={[0, 0.045, -0.04]}>
-            <sphereGeometry args={[0.015, 8, 8]} />
-            <meshBasicMaterial color={active ? "#FF3300" : "#330000"} />
+          <mesh ref={i === 0 ? led1Ref : led2Ref} position={[0, 0.052 * R, -0.06 * R]}>
+            <sphereGeometry args={[0.022 * R, 12, 12]} />
+            <meshBasicMaterial color={active ? "#FF2200" : "#1A0000"} />
+          </mesh>
+          {/* Armature contact pin */}
+          <mesh position={[0, -0.05 * R, 0.07 * R]}>
+            <cylinderGeometry args={[0.012 * R, 0.012 * R, 0.06 * R, 8]} />
+            <meshStandardMaterial color="#C8A020" metalness={0.9} />
           </mesh>
         </group>
       ))}
-      {/* Screw terminals */}
-      {[-0.15, -0.05, 0.05, 0.15].map((x, i) => (
-        <mesh key={i} position={[x, 0.03, 0.09]}>
-          <boxGeometry args={[0.04, 0.04, 0.04]} />
-          <meshStandardMaterial color="#888" metalness={0.7} />
-        </mesh>
+
+      {/* Optocoupler chip */}
+      <mesh position={[0, 0.04 * R, 0.07 * R]}>
+        <boxGeometry args={[0.08 * R, 0.03 * R, 0.05 * R]} />
+        <meshStandardMaterial color="#111" roughness={0.2} metalness={0.5} />
+      </mesh>
+
+      {/* Screw terminals (6 total) */}
+      {[-0.17 * R, -0.07 * R, 0.03 * R, 0.13 * R].map((x, i) => (
+        <group key={i} position={[x, 0.04 * R, 0.1 * R]}>
+          <mesh>
+            <boxGeometry args={[0.05 * R, 0.06 * R, 0.05 * R]} />
+            <meshStandardMaterial color="#777" metalness={0.8} roughness={0.2} />
+          </mesh>
+          {/* Screw head */}
+          <mesh position={[0, 0.038 * R, 0]}>
+            <cylinderGeometry args={[0.018 * R, 0.018 * R, 0.01 * R, 8]} />
+            <meshStandardMaterial color="#555" metalness={0.9} />
+          </mesh>
+          {/* Terminal label color */}
+          <mesh position={[0, -0.036 * R, 0]}>
+            <boxGeometry args={[0.048 * R, 0.006 * R, 0.048 * R]} />
+            <meshBasicMaterial color={i < 2 ? "#0044FF" : "#FF4400"} />
+          </mesh>
+        </group>
       ))}
+
+      {/* Flyback diode */}
+      <mesh position={[-0.16 * R, 0.055 * R, -0.06 * R]}>
+        <cylinderGeometry args={[0.016 * R, 0.016 * R, 0.07 * R, 8]} />
+        <meshStandardMaterial color="#333" roughness={0.3} />
+      </mesh>
+      {/* Diode stripe */}
+      <mesh position={[-0.16 * R, 0.055 * R, -0.04 * R]}>
+        <cylinderGeometry args={[0.017 * R, 0.017 * R, 0.006 * R, 8]} />
+        <meshBasicMaterial color="#CCCCCC" />
+      </mesh>
     </group>
   );
 }
@@ -504,7 +610,8 @@ function ContainerModel({
       {/* ESP32 — placed prominently on the side wall, larger and visible */}
       <ESP32Board position={[W / 2 - 0.05, 0.5, -L / 2 + 2.5]} onClick={() => onNodeSelect("ESP32")} />
       {/* Relay module below ESP32 */}
-      <RelayModule position={[W / 2 - 0.09, 0.45, -L / 2 + 1.5]} active={isFanActive} onClick={() => onNodeSelect("RELAY")} />
+      {/* Relay — moved to prominent open position */}
+      <RelayModule position={[W / 2 - 0.05, 0.1, -L / 2 + 2.5]} active={isFanActive} onClick={() => onNodeSelect("RELAY")} />
 
       {/* Wire: Relay → Fan 1 */}
       <Line
@@ -574,15 +681,16 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
     },
     RELAY: {
       icon: "⚡",
-      name: "Relay Module 2 kênh",
+      name: "Relay Module 2 kênh — SRD-05VDC",
       rows: [
-        ["Loại", "Optocoupler 5V 2-CH"],
-        ["Tải tối đa", "10A / 250VAC"],
-        ["Đầu ra", "NO / NC / COM"],
-        ["Kênh 1", `Quạt 1 — ${state.fanRelay === "ON" ? "✅ Đóng" : "❌ Mở"}`],
-        ["Kênh 2", `Dàn lạnh — ${state.fanRelay === "ON" ? "✅ Đóng" : "❌ Mở"}`],
-        ["Kích hoạt khi", "C2H4 > 25 ppm"],
-        ["Nguồn", "5V DC từ ESP32"],
+        ["🔵 PCB", "FR4 xanh dương · 5V logic"],
+        ["⚫ Cuộn relay", `2 cuộn SRD · ${state.fanRelay === "ON" ? "🔴 ĐANG KÍCH" : "⭕ Chờ"}`],
+        ["🔴 LED kênh 1", `Quạt thông gió · ${state.fanRelay === "ON" ? "✅ Đóng" : "❌ Mở"}`],
+        ["🔴 LED kênh 2", `Dàn lạnh · ${state.fanRelay === "ON" ? "✅ Đóng" : "❌ Mở"}`],
+        ["🟡 Terminal", "NO/NC/COM · 10A 250VAC"],
+        ["⚪ Diode", "Flyback · chống ngược dòng"],
+        ["🔲 Opto", "Cách ly điện quang"],
+        ["⚡ Kích hoạt", "C2H4 > 25 ppm → ESP32 gửi HIGH"],
       ],
     },
     FAN1: {
@@ -698,6 +806,8 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
           <pointLight position={[-8, 4, -6]} intensity={0.8} color="#88AAFF" />
           {/* Green spotlight focused on ESP32 */}
           <pointLight position={[3.5, 2.5, -2]} intensity={3.5} color="#00FF88" distance={4} decay={2} />
+          {/* Red spotlight focused on Relay */}
+          <pointLight position={[3.5, 2.0, -2.2]} intensity={2.8} color="#FF4400" distance={3.5} decay={2} />
           <ContainerModel state={state} onNodeSelect={(id) => setSelectedId(id)} />
           <OrbitControls enableZoom maxPolarAngle={Math.PI / 1.8} minDistance={5} maxDistance={18} />
         </Canvas>
@@ -733,6 +843,34 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
             </tbody>
           </table>
           <div className="mt-2 pt-1 border-t border-white/10 text-[10px] text-gray-600">Click vào thiết bị khác để xem thông số</div>
+          {/* Relay annotation panel — icon legend */}
+          {selectedId === "RELAY" && (
+            <div className="mt-2 pt-2 border-t border-orange-500/30">
+              <div className="text-[10px] text-orange-400 font-bold mb-1.5 tracking-wider">📋 CHÚ THÍCH LINH KIỆN</div>
+              <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px]">
+                {[
+                  { icon: "🔵", part: "PCB Board",    desc: "Mạch in xanh dương" },
+                  { icon: "⚫", part: "Cuộn relay",   desc: "Sinh từ trường đóng tiếp điểm" },
+                  { icon: "🔴", part: "LED trạng thái", desc: "Sáng khi relay kích" },
+                  { icon: "🟡", part: "Terminal vít",  desc: "Đấu dây tải 220V" },
+                  { icon: "⚪", part: "Diode flyback", desc: "Bảo vệ ngược dòng" },
+                  { icon: "🔲", part: "Optocoupler",   desc: "Cách ly ESP32 ↔ tải" },
+                ].map(({ icon, part, desc }) => (
+                  <div key={part} className="flex items-start gap-1">
+                    <span>{icon}</span>
+                    <div>
+                      <div className="text-gray-300 font-semibold leading-tight">{part}</div>
+                      <div className="text-gray-600 leading-tight">{desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-1.5 text-[10px] text-orange-300/70 flex items-center gap-1">
+                <span>{state.fanRelay === "ON" ? "🔴" : "⭕"}</span>
+                <span>{state.fanRelay === "ON" ? "Relay đang ĐÓNG — Tải đang chạy" : "Relay đang MỞ — Tải ngắt điện"}</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
