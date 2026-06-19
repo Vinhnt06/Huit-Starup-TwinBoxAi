@@ -18,47 +18,145 @@ export interface DeviceInfo {
   specs: { label: string; value: string }[];
 }
 
-// ── ESP32 PCB Board ────────────────────────────────────────────────────────
+// ── ESP32 PCB Board (Prominent) ─────────────────────────────────────────────
 function ESP32Board({ position, onClick }: { position: [number, number, number]; onClick: () => void }) {
   const [hovered, setHovered] = useState(false);
+  const glowRef = useRef<THREE.Mesh>(null);
+  const led1Ref = useRef<THREE.Mesh>(null);
+  const led2Ref = useRef<THREE.Mesh>(null);
+
+  // Pulsing glow + blinking LEDs
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    if (glowRef.current) {
+      const s = 1 + Math.sin(t * 2) * 0.08;
+      glowRef.current.scale.set(s, 1, s);
+      (glowRef.current.material as THREE.MeshBasicMaterial).opacity = 0.18 + Math.sin(t * 2) * 0.08;
+    }
+    if (led1Ref.current) {
+      (led1Ref.current.material as THREE.MeshBasicMaterial).color.setHex(
+        Math.sin(t * 4) > 0 ? 0x00ff44 : 0x004410
+      );
+    }
+    if (led2Ref.current) {
+      (led2Ref.current.material as THREE.MeshBasicMaterial).color.setHex(
+        Math.sin(t * 1.5 + 1) > 0 ? 0x0088ff : 0x001133
+      );
+    }
+  });
+
+  const S = 2.2; // scale factor
   return (
     <group position={position}>
       {/* Click zone */}
-      <mesh onClick={(e) => { e.stopPropagation(); onClick(); }} onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }} onPointerOut={(e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; }} visible={false}>
-        <boxGeometry args={[0.7, 0.2, 0.4]} />
+      <mesh
+        onClick={(e) => { e.stopPropagation(); onClick(); }}
+        onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }}
+        onPointerOut={(e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; }}
+        visible={false}
+      >
+        <boxGeometry args={[0.7 * S, 0.3 * S, 0.4 * S]} />
       </mesh>
-      {/* PCB main board */}
+
+      {/* Glow halo ring underneath */}
+      <mesh ref={glowRef} position={[0, -0.04 * S, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.28 * S, 0.48 * S, 40]} />
+        <meshBasicMaterial color="#00FF88" transparent opacity={0.22} side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* PCB main board — bright green with metallic sheen */}
       <mesh>
-        <boxGeometry args={[0.55, 0.03, 0.28]} />
-        <meshStandardMaterial color={hovered ? "#22AA44" : "#1A5C2A"} roughness={0.4} metalness={0.1} />
+        <boxGeometry args={[0.55 * S, 0.035 * S, 0.28 * S]} />
+        <meshStandardMaterial
+          color={hovered ? "#33DD66" : "#1E7A36"}
+          roughness={0.25}
+          metalness={0.35}
+          emissive={hovered ? "#0A3A18" : "#051A0A"}
+          emissiveIntensity={0.4}
+        />
       </mesh>
-      {/* CPU chip */}
-      <mesh position={[0, 0.025, 0]}>
-        <boxGeometry args={[0.12, 0.015, 0.12]} />
-        <meshStandardMaterial color="#111" roughness={0.2} metalness={0.5} />
-      </mesh>
-      {/* WiFi antenna stub */}
-      <mesh position={[0.25, 0.04, 0]}>
-        <boxGeometry args={[0.04, 0.06, 0.02]} />
-        <meshStandardMaterial color="#C0C0C0" metalness={0.8} roughness={0.2} />
-      </mesh>
-      {/* USB port */}
-      <mesh position={[-0.25, 0.02, 0]}>
-        <boxGeometry args={[0.04, 0.03, 0.06]} />
-        <meshStandardMaterial color="#888" metalness={0.6} />
-      </mesh>
-      {/* Pin rows */}
-      {[-0.1, -0.05, 0, 0.05, 0.1].map((x, i) => (
-        <mesh key={i} position={[x, 0.03, 0.13]}>
-          <boxGeometry args={[0.02, 0.04, 0.02]} />
-          <meshStandardMaterial color="#C0A020" metalness={0.9} />
+
+      {/* PCB copper trace lines (decorative) */}
+      {[-0.08, 0, 0.08].map((z, i) => (
+        <mesh key={i} position={[0.1, 0.021 * S, z * S]}>
+          <boxGeometry args={[0.25 * S, 0.003, 0.008 * S]} />
+          <meshBasicMaterial color="#C8860A" />
         </mesh>
       ))}
-      {/* Status LED (green) */}
-      <mesh position={[0.18, 0.03, 0.1]}>
-        <sphereGeometry args={[0.018, 8, 8]} />
+
+      {/* ESP32 module (main IC block) */}
+      <mesh position={[0.04 * S, 0.04 * S, 0]}>
+        <boxGeometry args={[0.32 * S, 0.04 * S, 0.18 * S]} />
+        <meshStandardMaterial color={hovered ? "#444" : "#1A1A1A"} roughness={0.2} metalness={0.6} />
+      </mesh>
+      {/* Module shield mesh lines */}
+      {[-0.06, 0, 0.06].map((z, i) => (
+        <mesh key={i} position={[0.04 * S, 0.062 * S, z * S]}>
+          <boxGeometry args={[0.005, 0.02 * S, 0.002]} />
+          <meshBasicMaterial color="#888" />
+        </mesh>
+      ))}
+
+      {/* CPU/SOC chip */}
+      <mesh position={[-0.14 * S, 0.04 * S, 0]}>
+        <boxGeometry args={[0.13 * S, 0.035 * S, 0.13 * S]} />
+        <meshStandardMaterial color="#111" roughness={0.15} metalness={0.7} />
+      </mesh>
+      {/* Chip label (small box) */}
+      <mesh position={[-0.14 * S, 0.058 * S, 0]}>
+        <boxGeometry args={[0.07 * S, 0.002, 0.07 * S]} />
+        <meshBasicMaterial color="#FFFFFF" />
+      </mesh>
+
+      {/* WiFi antenna — tall and prominent */}
+      <mesh position={[0.28 * S, 0.1 * S, 0]}>
+        <boxGeometry args={[0.022 * S, 0.18 * S, 0.015 * S]} />
+        <meshStandardMaterial color="#D0D0D0" metalness={0.9} roughness={0.1} />
+      </mesh>
+      {/* Antenna tip */}
+      <mesh position={[0.28 * S, 0.2 * S, 0]}>
+        <sphereGeometry args={[0.018 * S, 8, 8]} />
+        <meshBasicMaterial color="#AAAAAA" />
+      </mesh>
+
+      {/* USB Micro port */}
+      <mesh position={[-0.28 * S, 0.025 * S, 0]}>
+        <boxGeometry args={[0.025 * S, 0.04 * S, 0.07 * S]} />
+        <meshStandardMaterial color="#888" metalness={0.7} />
+      </mesh>
+
+      {/* Pin rows — both sides */}
+      {[-0.1, -0.05, 0, 0.05, 0.1, 0.15].map((x, i) => (
+        <group key={i}>
+          <mesh position={[x * S, 0.045 * S, 0.14 * S]}>
+            <boxGeometry args={[0.015 * S, 0.055 * S, 0.015 * S]} />
+            <meshStandardMaterial color="#C8A020" metalness={0.95} />
+          </mesh>
+          <mesh position={[x * S, 0.045 * S, -0.14 * S]}>
+            <boxGeometry args={[0.015 * S, 0.055 * S, 0.015 * S]} />
+            <meshStandardMaterial color="#C8A020" metalness={0.95} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* Green power LED — blinking */}
+      <mesh ref={led1Ref} position={[0.18 * S, 0.052 * S, 0.08 * S]}>
+        <sphereGeometry args={[0.022 * S, 12, 12]} />
         <meshBasicMaterial color="#00FF44" />
       </mesh>
+      {/* Blue activity LED */}
+      <mesh ref={led2Ref} position={[0.18 * S, 0.052 * S, -0.04 * S]}>
+        <sphereGeometry args={[0.018 * S, 12, 12]} />
+        <meshBasicMaterial color="#0088FF" />
+      </mesh>
+
+      {/* Capacitors (small cylinders) */}
+      {[-0.06, 0.0].map((z, i) => (
+        <mesh key={i} position={[-0.1 * S, 0.055 * S, z * S]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.018 * S, 0.018 * S, 0.04 * S, 10]} />
+          <meshStandardMaterial color={i === 0 ? "#222255" : "#552222"} roughness={0.4} />
+        </mesh>
+      ))}
     </group>
   );
 }
@@ -403,8 +501,8 @@ function ContainerModel({
         <boxGeometry args={[0.01, 0.53, 0.73]} />
         <meshStandardMaterial color="#3A3A3A" roughness={0.3} />
       </mesh>
-      {/* ESP32 inside box */}
-      <ESP32Board position={[W / 2 - 0.09, 0.7, -L / 2 + 1.5]} onClick={() => onNodeSelect("ESP32")} />
+      {/* ESP32 — placed prominently on the side wall, larger and visible */}
+      <ESP32Board position={[W / 2 - 0.05, 0.5, -L / 2 + 2.5]} onClick={() => onNodeSelect("ESP32")} />
       {/* Relay module below ESP32 */}
       <RelayModule position={[W / 2 - 0.09, 0.45, -L / 2 + 1.5]} active={isFanActive} onClick={() => onNodeSelect("RELAY")} />
 
@@ -598,6 +696,8 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
           <ambientLight intensity={0.7} />
           <pointLight position={[10, 10, 10]} intensity={1.8} />
           <pointLight position={[-8, 4, -6]} intensity={0.8} color="#88AAFF" />
+          {/* Green spotlight focused on ESP32 */}
+          <pointLight position={[3.5, 2.5, -2]} intensity={3.5} color="#00FF88" distance={4} decay={2} />
           <ContainerModel state={state} onNodeSelect={(id) => setSelectedId(id)} />
           <OrbitControls enableZoom maxPolarAngle={Math.PI / 1.8} minDistance={5} maxDistance={18} />
         </Canvas>
