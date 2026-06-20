@@ -68,11 +68,11 @@ function ESP32Board({ position, onClick }: { position: [number, number, number];
       <mesh>
         <boxGeometry args={[0.55 * S, 0.035 * S, 0.28 * S]} />
         <meshStandardMaterial
-          color={hovered ? "#33DD66" : "#1E7A36"}
-          roughness={0.25}
-          metalness={0.35}
-          emissive={hovered ? "#0A3A18" : "#051A0A"}
-          emissiveIntensity={0.4}
+          color={hovered ? "#00FF88" : "#05C46B"}
+          roughness={0.2}
+          metalness={0.4}
+          emissive={hovered ? "#004D20" : "#002008"}
+          emissiveIntensity={0.5}
         />
       </mesh>
 
@@ -227,11 +227,11 @@ function RelayModule({
       <mesh>
         <boxGeometry args={[0.44 * R, 0.03 * R, 0.22 * R]} />
         <meshStandardMaterial
-          color={hovered ? "#2A55CC" : "#1A3A8A"}
-          roughness={0.3}
-          metalness={0.2}
-          emissive={active ? "#110033" : "#050510"}
-          emissiveIntensity={0.5}
+          color={hovered ? "#38bdf8" : "#0091FF"}
+          roughness={0.2}
+          metalness={0.3}
+          emissive={active ? "#003A70" : "#001A38"}
+          emissiveIntensity={0.6}
         />
       </mesh>
 
@@ -704,7 +704,7 @@ function ContainerModel({
 // ── Main Export ────────────────────────────────────────────────────────────
 export default function ThreeContainer({ state }: ThreeContainerProps) {
   const [mounted, setMounted] = useState(false);
-  const [selectedId, setSelectedId] = useState<string>("NODE01");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     const h = requestAnimationFrame(() => setMounted(true));
@@ -852,7 +852,7 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
     };
   }
 
-  const selected = deviceMap[selectedId] ?? deviceMap["NODE01"];
+  const selected = selectedId ? deviceMap[selectedId] : null;
 
   return (
     <div className="card-flat p-5 flex flex-col gap-4 relative">
@@ -895,51 +895,58 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
         </div>
 
         {/* HUD — detailed specs */}
-        <div className="absolute bottom-3 left-3 bg-black/85 border border-white/10 rounded-xl p-3 text-[11px] text-gray-300 max-w-[270px] backdrop-blur-sm">
-          <div className="flex items-center gap-2 mb-2 border-b border-white/10 pb-2">
-            <span className="text-base">{selected.icon}</span>
-            <span className="font-bold text-white text-xs leading-tight">{selected.name}</span>
-          </div>
-          <table className="w-full">
-            <tbody>
-              {selected.rows.map(([label, value]) => (
-                <tr key={label}>
-                  <td className="text-gray-500 pr-2 pb-0.5 whitespace-nowrap">{label}</td>
-                  <td className="text-gray-200 pb-0.5 font-medium">{value}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="mt-2 pt-1 border-t border-white/10 text-[10px] text-gray-600">Click vào thiết bị khác để xem thông số</div>
-          {/* Relay annotation panel — icon legend */}
-          {selectedId === "RELAY" && (
-            <div className="mt-2 pt-2 border-t border-orange-500/30">
-              <div className="text-[10px] text-orange-400 font-bold mb-1.5 tracking-wider">📋 CHÚ THÍCH LINH KIỆN</div>
-              <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px]">
-                {[
-                  { icon: "🔵", part: "PCB Board",    desc: "Mạch in xanh dương" },
-                  { icon: "⚫", part: "Cuộn relay",   desc: "Sinh từ trường đóng tiếp điểm" },
-                  { icon: "🔴", part: "LED trạng thái", desc: "Sáng khi relay kích" },
-                  { icon: "🟡", part: "Terminal vít",  desc: "Đấu dây tải 220V" },
-                  { icon: "⚪", part: "Diode flyback", desc: "Bảo vệ ngược dòng" },
-                  { icon: "🔲", part: "Optocoupler",   desc: "Cách ly ESP32 ↔ tải" },
-                ].map(({ icon, part, desc }) => (
-                  <div key={part} className="flex items-start gap-1">
-                    <span>{icon}</span>
-                    <div>
-                      <div className="text-gray-300 font-semibold leading-tight">{part}</div>
-                      <div className="text-gray-600 leading-tight">{desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-1.5 text-[10px] text-orange-300/70 flex items-center gap-1">
-                <span>{state.fanRelay === "ON" ? "🔴" : "⭕"}</span>
-                <span>{state.fanRelay === "ON" ? "Relay đang ĐÓNG — Tải đang chạy" : "Relay đang MỞ — Tải ngắt điện"}</span>
-              </div>
+        {selected ? (
+          <div className="absolute bottom-3 left-3 bg-black/85 border border-white/10 rounded-xl p-3 text-[11px] text-gray-300 max-w-[270px] backdrop-blur-sm">
+            <div className="flex items-center gap-2 mb-2 border-b border-white/10 pb-2">
+              <span className="text-base">{selected.icon}</span>
+              <span className="font-bold text-white text-xs leading-tight">{selected.name}</span>
             </div>
-          )}
-        </div>
+            <table className="w-full">
+              <tbody>
+                {selected.rows.map(([label, value]) => (
+                  <tr key={label}>
+                    <td className="text-gray-500 pr-2 pb-0.5 whitespace-nowrap">{label}</td>
+                    <td className="text-gray-200 pb-0.5 font-medium">{value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="mt-2 pt-1 border-t border-white/10 text-[10px] text-gray-600">Click vào thiết bị khác để xem thông số</div>
+            {/* Relay annotation panel — icon legend */}
+            {selectedId === "RELAY" && (
+              <div className="mt-2 pt-2 border-t border-orange-500/30">
+                <div className="text-[10px] text-orange-400 font-bold mb-1.5 tracking-wider">📋 CHÚ THÍCH LINH KIỆN</div>
+                <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px]">
+                  {[
+                    { icon: "🔵", part: "PCB Board",    desc: "Mạch in xanh dương" },
+                    { icon: "⚫", part: "Cuộn relay",   desc: "Sinh từ trường đóng tiếp điểm" },
+                    { icon: "🔴", part: "LED trạng thái", desc: "Sáng khi relay kích" },
+                    { icon: "🟡", part: "Terminal vít",  desc: "Đấu dây tải 220V" },
+                    { icon: "⚪", part: "Diode flyback", desc: "Bảo vệ ngược dòng" },
+                    { icon: "🔲", part: "Optocoupler",   desc: "Cách ly ESP32 ↔ tải" },
+                  ].map(({ icon, part, desc }) => (
+                    <div key={part} className="flex items-start gap-1">
+                      <span>{icon}</span>
+                      <div>
+                        <div className="text-gray-300 font-semibold leading-tight">{part}</div>
+                        <div className="text-gray-600 leading-tight">{desc}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-1.5 text-[10px] text-orange-300/70 flex items-center gap-1">
+                  <span>{state.fanRelay === "ON" ? "🔴" : "⭕"}</span>
+                  <span>{state.fanRelay === "ON" ? "Relay đang ĐÓNG — Tải đang chạy" : "Relay đang MỞ — Tải ngắt điện"}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="absolute bottom-3 left-3 bg-black/85 border border-white/10 rounded-xl px-3 py-2 text-[10px] text-gray-400 backdrop-blur-sm flex items-center gap-1.5">
+            <span className="animate-pulse text-[#00bcff]">👉</span>
+            <span>Nhấp vào bất kỳ linh kiện nào để xem chi tiết</span>
+          </div>
+        )}
       </div>
 
       {/* Component legend below canvas */}
