@@ -7,6 +7,8 @@ import ActiveControls from "@/components/ActiveControls";
 import ThreeContainer from "@/components/ThreeContainer";
 import TechnicalSpecs from "@/components/TechnicalSpecs";
 import AlertBanner from "@/components/AlertBanner";
+import PricingSection from "@/components/PricingSection";
+
 
 // ── Feature item type ───────────────────────────────────────────────────────
 interface Feature {
@@ -307,7 +309,8 @@ export default function Home() {
         </div>
       </section>
 
-
+      {/* ── PRICING SECTION ────────────────────────────────────────────── */}
+      <PricingSection />
 
       {/* ── SOCIAL PROOF / STATS ────────────────────────────────────────── */}
       <section className="w-full py-12 px-4 bg-green-600" aria-label="Statistics">
