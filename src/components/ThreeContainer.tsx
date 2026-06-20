@@ -695,7 +695,7 @@ function ContainerModel({
       {/* ── Sensor Nodes ── */}
       <SensorNode position={[-0.8, -0.4, -2.5]} status={state.nodeStatus} onClick={() => onNodeSelect("NODE01")} />
       <SensorNode position={[0.8, 0.2, 0]} status="NORMAL" onClick={() => onNodeSelect("NODE02")} hasMiniFan={true} />
-      <SensorNode position={[-1.2, -1.5, 3.2]} status="NORMAL" onClick={() => onNodeSelect("NODE03")} hanging={false} />
+      <SensorNode position={[-1.2, -1.5, 1.0]} status="NORMAL" onClick={() => onNodeSelect("NODE03")} hanging={false} />
       <SensorNode position={[0.6, 1.5, 1.2]} status="WARNING" onClick={() => onNodeSelect("NODE04")} />
     </group>
   );
@@ -812,14 +812,14 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
     },
     NODE03: {
       icon: "📦",
-      name: "Sensor Node 03 — Cận sàn & Đuôi xe",
+      name: "Sensor Node 03 — Cận sàn (Thùng táo #05)",
       rows: [
         ["Ethylene (C2H4)", "1.2 ppm"],
         ["Nhiệt độ sàn", "4.1°C"],
         ["Độ ẩm", "87% RH"],
         ["Giao thức", "Mesh ESP-NOW"],
         ["Kiểu lắp", "Đặt dưới sàn (Không treo)"],
-        ["Vị trí", "Vùng C — Sát sọt hàng phía sau"],
+        ["Vị trí", "Vùng B3 — Sát bên Thùng táo đỏ #05"],
       ],
     },
     NODE04: {
