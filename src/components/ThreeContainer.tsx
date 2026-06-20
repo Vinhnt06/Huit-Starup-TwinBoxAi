@@ -415,22 +415,33 @@ function Fan({
 }
 
 // ── Sensor Node ────────────────────────────────────────────────────────────
+interface SensorNodeProps {
+  position: [number, number, number];
+  status: "NORMAL" | "WARNING" | "CRITICAL";
+  onClick: () => void;
+  hanging?: boolean;
+  hasMiniFan?: boolean;
+}
+
 function SensorNode({
   position,
   status,
   onClick,
-}: {
-  position: [number, number, number];
-  status: "NORMAL" | "WARNING" | "CRITICAL";
-  onClick: () => void;
-}) {
+  hanging = true,
+  hasMiniFan = false,
+}: SensorNodeProps) {
   const [hovered, setHovered] = useState(false);
   const ledRef = useRef<THREE.Mesh>(null);
+  const fanRef = useRef<THREE.Group>(null);
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock }, delta) => {
     if (ledRef.current) {
       const s = 1 + Math.sin(clock.getElapsedTime() * 6) * 0.2;
       ledRef.current.scale.set(s, s, s);
+    }
+    if (hasMiniFan && fanRef.current) {
+      // Spin the mini fan blades around its local Z axis
+      fanRef.current.rotation.z += delta * 18;
     }
   });
 
@@ -448,17 +459,36 @@ function SensorNode({
       >
         <boxGeometry args={[0.6, 0.6, 0.6]} />
       </mesh>
-      {/* Mounting rod */}
-      <Line
-        points={[[0, 0, 0], [0, 1.8 - position[1], 0]]}
-        color={hovered ? "#4AF626" : "#666666"}
-        lineWidth={2}
-      />
-      {/* Ceiling flange */}
-      <mesh position={[0, 1.8 - position[1], 0]}>
-        <cylinderGeometry args={[0.12, 0.12, 0.02, 12]} />
-        <meshStandardMaterial color="#94A3B8" metalness={0.6} />
-      </mesh>
+
+      {/* Mounting rod (to ceiling) or Stand (to floor) */}
+      {hanging ? (
+        <>
+          <Line
+            points={[[0, 0, 0], [0, 1.8 - position[1], 0]]}
+            color={hovered ? "#4AF626" : "#666666"}
+            lineWidth={2}
+          />
+          {/* Ceiling flange */}
+          <mesh position={[0, 1.8 - position[1], 0]}>
+            <cylinderGeometry args={[0.12, 0.12, 0.02, 12]} />
+            <meshStandardMaterial color="#94A3B8" metalness={0.6} />
+          </mesh>
+        </>
+      ) : (
+        <>
+          <Line
+            points={[[0, 0, 0], [0, -1.8 - position[1], 0]]}
+            color={hovered ? "#4AF626" : "#666666"}
+            lineWidth={2}
+          />
+          {/* Floor stand base */}
+          <mesh position={[0, -1.8 - position[1], 0]}>
+            <cylinderGeometry args={[0.15, 0.15, 0.02, 12]} />
+            <meshStandardMaterial color="#64748B" metalness={0.5} roughness={0.4} />
+          </mesh>
+        </>
+      )}
+
       {/* Enclosure body */}
       <group rotation={[0.05, hovered ? Math.PI / 4 : 0.2, 0.05]}>
         <mesh>
@@ -485,11 +515,36 @@ function SensorNode({
           <sphereGeometry args={[0.03, 16, 16]} />
           <meshBasicMaterial color={statusColor} />
         </mesh>
-        {/* Ground ring */}
+        {/* Ground/stand projection ring */}
         <mesh position={[0, -0.16, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <ringGeometry args={[0.22, 0.26, 32]} />
           <meshBasicMaterial color={statusColor} transparent opacity={hovered ? 0.9 : 0.4} side={THREE.DoubleSide} />
         </mesh>
+
+        {/* Mini Fan Integration */}
+        {hasMiniFan && (
+          <group position={[0, -0.15, 0]}>
+            {/* Mini fan protective frame */}
+            <mesh rotation={[Math.PI / 2, 0, 0]}>
+              <ringGeometry args={[0.13, 0.15, 24]} />
+              <meshBasicMaterial color="#FF3B30" side={THREE.DoubleSide} />
+            </mesh>
+            {/* Spinning blades group */}
+            <group ref={fanRef}>
+              {[0, 1, 2, 3].map((idx) => (
+                <mesh key={idx} rotation={[0, 0, (idx * Math.PI) / 2]}>
+                  <boxGeometry args={[0.12, 0.025, 0.008]} />
+                  <meshStandardMaterial color="#475569" roughness={0.3} />
+                </mesh>
+              ))}
+            </group>
+            {/* Central cap */}
+            <mesh>
+              <sphereGeometry args={[0.028, 8, 8]} />
+              <meshStandardMaterial color="#FF3B30" />
+            </mesh>
+          </group>
+        )}
       </group>
     </group>
   );
@@ -639,8 +694,9 @@ function ContainerModel({
 
       {/* ── Sensor Nodes ── */}
       <SensorNode position={[-0.8, -0.4, -2.5]} status={state.nodeStatus} onClick={() => onNodeSelect("NODE01")} />
-      <SensorNode position={[0.8, 0.2, 0]} status="NORMAL" onClick={() => onNodeSelect("NODE02")} />
-      <SensorNode position={[-0.6, -0.2, 2.5]} status="NORMAL" onClick={() => onNodeSelect("NODE03")} />
+      <SensorNode position={[0.8, 0.2, 0]} status="NORMAL" onClick={() => onNodeSelect("NODE02")} hasMiniFan={true} />
+      <SensorNode position={[-1.2, -1.5, 3.2]} status="NORMAL" onClick={() => onNodeSelect("NODE03")} hanging={false} />
+      <SensorNode position={[0.6, 1.5, 1.2]} status="WARNING" onClick={() => onNodeSelect("NODE04")} />
     </group>
   );
 }
@@ -743,27 +799,39 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
       ],
     },
     NODE02: {
-      icon: "📡",
-      name: "Sensor Node 02 — Trung tâm",
+      icon: "🌀",
+      name: "Sensor Node 02 — Quạt Mini Tích Hợp",
       rows: [
         ["Ethylene (C2H4)", "1.5 ppm"],
         ["Nhiệt độ", "3.9°C"],
         ["Độ ẩm", "85% RH"],
         ["Giao thức", "Mesh ESP-NOW"],
-        ["Trạng thái", "🟢 Bình thường"],
+        ["Trạng thái", "🟢 Hoạt động (Quạt mini quay)"],
         ["Vị trí", "Vùng B — Giữa container"],
       ],
     },
     NODE03: {
-      icon: "📡",
-      name: "Sensor Node 03 — Phía sau",
+      icon: "📦",
+      name: "Sensor Node 03 — Cận sàn & Đuôi xe",
       rows: [
         ["Ethylene (C2H4)", "1.2 ppm"],
-        ["Nhiệt độ", "4.1°C"],
+        ["Nhiệt độ sàn", "4.1°C"],
         ["Độ ẩm", "87% RH"],
         ["Giao thức", "Mesh ESP-NOW"],
-        ["Trạng thái", "🟢 Bình thường"],
-        ["Vị trí", "Vùng C — Đuôi container"],
+        ["Kiểu lắp", "Đặt dưới sàn (Không treo)"],
+        ["Vị trí", "Vùng C — Sát sọt hàng phía sau"],
+      ],
+    },
+    NODE04: {
+      icon: "⚠️",
+      name: "Sensor Node 04 — Sát trần (Điểm mù)",
+      rows: [
+        ["Ethylene (C2H4)", "0.8 ppm"],
+        ["Nhiệt độ trần (Điểm mù)", "6.8°C"],
+        ["Độ ẩm", "80% RH"],
+        ["Giao thức", "Mesh ESP-NOW"],
+        ["Trạng thái", "🟡 Tụ nhiệt điểm mù sát trần"],
+        ["Vị trí", "Vùng C — Cao nhất sát trần phía sau"],
       ],
     },
   };
