@@ -434,16 +434,65 @@ function SensorNode({
 }: SensorNodeProps) {
   const [hovered, setHovered] = useState(false);
   const ledRef = useRef<THREE.Mesh>(null);
+  const ledMatRef = useRef<THREE.MeshBasicMaterial>(null);
+  const ringMatRef = useRef<THREE.MeshBasicMaterial>(null);
   const fanRef = useRef<THREE.Group>(null);
+  const cloudRef = useRef<THREE.Mesh>(null);
+  const cloudMatRef = useRef<THREE.MeshBasicMaterial>(null);
 
   useFrame(({ clock }, delta) => {
+    const elapsed = clock.getElapsedTime();
+
+    // 1. Dynamic LED Scale Pulsing
     if (ledRef.current) {
-      const s = 1 + Math.sin(clock.getElapsedTime() * 6) * 0.2;
+      const pulseSpeed = status === "CRITICAL" ? 14 : status === "WARNING" ? 7 : 4;
+      const pulseAmp = status === "CRITICAL" ? 0.35 : status === "WARNING" ? 0.2 : 0.1;
+      const s = 1 + Math.sin(elapsed * pulseSpeed) * pulseAmp;
       ledRef.current.scale.set(s, s, s);
     }
+
+    // 2. Dynamic Blinking for LED Material
+    if (ledMatRef.current) {
+      if (status === "CRITICAL") {
+        const isLight = Math.sin(elapsed * 15) > 0;
+        ledMatRef.current.color.set(isLight ? "#FF1E1E" : "#3F0000");
+      } else if (status === "WARNING") {
+        const isLight = Math.sin(elapsed * 8) > 0;
+        ledMatRef.current.color.set(isLight ? "#F59E0B" : "#4A2E00");
+      } else {
+        ledMatRef.current.color.set("#4AF626");
+      }
+    }
+
+    // 3. Dynamic Blinking and Opacity for Projection Ring Material
+    if (ringMatRef.current) {
+      if (status === "CRITICAL") {
+        const isLight = Math.sin(elapsed * 15) > 0;
+        ringMatRef.current.color.set(isLight ? "#FF1E1E" : "#3F0000");
+        ringMatRef.current.opacity = isLight ? 0.85 : 0.2;
+      } else if (status === "WARNING") {
+        const isLight = Math.sin(elapsed * 8) > 0;
+        ringMatRef.current.color.set(isLight ? "#F59E0B" : "#4A2E00");
+        ringMatRef.current.opacity = isLight ? 0.65 : 0.15;
+      } else {
+        ringMatRef.current.color.set("#4AF626");
+        ringMatRef.current.opacity = hovered ? 0.9 : 0.35;
+      }
+    }
+
+    // 4. Mini Fan Rotation: Spins only when ethylene/anomaly is active (WARNING / CRITICAL)
     if (hasMiniFan && fanRef.current) {
-      // Spin the mini fan blades around its local Z axis
-      fanRef.current.rotation.z += delta * 18;
+      const speed = status === "CRITICAL" ? 22 : status === "WARNING" ? 10 : 0;
+      fanRef.current.rotation.z += delta * speed;
+    }
+
+    // 5. Pulsing Warning Gas Cloud (Ethylene release visualization)
+    if (cloudRef.current) {
+      const scale = 1.0 + Math.sin(elapsed * 8) * 0.15;
+      cloudRef.current.scale.set(scale, scale, scale);
+    }
+    if (cloudMatRef.current) {
+      cloudMatRef.current.opacity = 0.15 + Math.sin(elapsed * 8) * 0.08;
     }
   });
 
@@ -461,6 +510,34 @@ function SensorNode({
       >
         <boxGeometry args={[0.6, 0.6, 0.6]} />
       </mesh>
+
+      {/* Pulsing Warning Gas Cloud (Ethylene/Heat warning aura) */}
+      {status === "CRITICAL" && (
+        <mesh ref={cloudRef}>
+          <sphereGeometry args={[0.65, 16, 16]} />
+          <meshBasicMaterial
+            ref={cloudMatRef}
+            color="#FF1E1E"
+            transparent
+            opacity={0.2}
+            side={THREE.DoubleSide}
+            depthWrite={false}
+          />
+        </mesh>
+      )}
+      {status === "WARNING" && (
+        <mesh ref={cloudRef}>
+          <sphereGeometry args={[0.55, 16, 16]} />
+          <meshBasicMaterial
+            ref={cloudMatRef}
+            color="#F59E0B"
+            transparent
+            opacity={0.15}
+            side={THREE.DoubleSide}
+            depthWrite={false}
+          />
+        </mesh>
+      )}
 
       {/* Mounting rod (to ceiling) or Stand (to floor) */}
       {hanging ? (
@@ -515,12 +592,12 @@ function SensorNode({
         {/* Status LED */}
         <mesh ref={ledRef} position={[0, 0.12, -0.14]}>
           <sphereGeometry args={[0.03, 16, 16]} />
-          <meshBasicMaterial color={statusColor} />
+          <meshBasicMaterial ref={ledMatRef} color={statusColor} />
         </mesh>
         {/* Ground/stand projection ring */}
         <mesh position={[0, -0.16, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <ringGeometry args={[0.22, 0.26, 32]} />
-          <meshBasicMaterial color={statusColor} transparent opacity={hovered ? 0.9 : 0.4} side={THREE.DoubleSide} />
+          <meshBasicMaterial ref={ringMatRef} color={statusColor} transparent opacity={hovered ? 0.9 : 0.4} side={THREE.DoubleSide} />
         </mesh>
 
         {/* Mini Fan Integration */}
