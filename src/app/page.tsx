@@ -200,7 +200,7 @@ export default function Home() {
                 {idx < HOW_IT_WORKS.length - 1 && (
                   <div className="hidden lg:block absolute top-8 left-full w-5 h-0.5 bg-green-200 z-10" aria-hidden="true" />
                 )}
-                <div className="text-2xl font-black text-green-100 mb-3 font-mono-tech">{step.step}</div>
+                <div className="text-2xl font-black text-green-600 mb-3 font-mono-tech">{step.step}</div>
                 <h3 className="font-bold text-gray-900 text-sm mb-1.5">{step.title}</h3>
                 <p className="text-gray-400 text-xs leading-relaxed">{step.desc}</p>
               </div>
