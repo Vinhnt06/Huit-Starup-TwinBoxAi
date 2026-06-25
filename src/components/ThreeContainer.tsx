@@ -528,21 +528,21 @@ function SensorNode({
           <group position={[0, -0.15, 0]}>
             {/* Mini fan protective frame */}
             <mesh rotation={[Math.PI / 2, 0, 0]}>
-              <ringGeometry args={[0.13, 0.15, 24]} />
+              <ringGeometry args={[0.22, 0.25, 32]} />
               <meshBasicMaterial color="#FF3B30" side={THREE.DoubleSide} />
             </mesh>
             {/* Spinning blades group */}
             <group ref={fanRef}>
               {[0, 1, 2, 3].map((idx) => (
                 <mesh key={idx} rotation={[0, 0, (idx * Math.PI) / 2]}>
-                  <boxGeometry args={[0.12, 0.025, 0.008]} />
+                  <boxGeometry args={[0.41, 0.045, 0.012]} />
                   <meshStandardMaterial color="#475569" roughness={0.3} />
                 </mesh>
               ))}
             </group>
             {/* Central cap */}
             <mesh>
-              <sphereGeometry args={[0.028, 8, 8]} />
+              <sphereGeometry args={[0.05, 12, 12]} />
               <meshStandardMaterial color="#FF3B30" />
             </mesh>
           </group>
