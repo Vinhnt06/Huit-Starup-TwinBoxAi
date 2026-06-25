@@ -492,7 +492,7 @@ function SensorNode({
       )}
 
       {/* Enclosure body */}
-      <group rotation={[0.05, hovered ? Math.PI / 4 : 0.2, 0.05]}>
+      <group rotation={[0.05, hovered ? Math.PI / 4 : 0.2, 0.05]} scale={hasMiniFan ? 1.55 : 1.0}>
         <mesh>
           <boxGeometry args={[0.3, 0.22, 0.48]} />
           <meshStandardMaterial color={hovered ? "#94A3B8" : "#CBD5E1"} roughness={0.5} metalness={0.15} />
@@ -551,7 +551,7 @@ function SensorNode({
 
       {/* Floating 3D HTML Label */}
       {hasMiniFan && isSelected && (
-        <Html position={[0, 0.45, 0]} center distanceFactor={8}>
+        <Html position={[0, 0.6, 0]} center distanceFactor={8}>
           <div className="bg-orange-600/90 text-white font-bold text-[8px] uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-lg border border-orange-400/50 whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5 backdrop-blur-xs">
             <span className="inline-block animate-spin" style={{ animationDuration: "3s" }}>🌀</span>
             <span>Node có cánh quạt</span>
