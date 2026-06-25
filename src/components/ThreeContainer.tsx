@@ -382,16 +382,16 @@ function Fan({
       {/* Housing ring */}
       <mesh>
         <ringGeometry args={[0.72, 0.82, 32]} />
-        <meshBasicMaterial color="#CC2200" side={THREE.DoubleSide} />
+        <meshBasicMaterial color="#39FF14" side={THREE.DoubleSide} />
       </mesh>
       {/* Cross struts */}
       <mesh>
         <boxGeometry args={[1.6, 0.06, 0.04]} />
-        <meshBasicMaterial color="#AA1100" />
+        <meshBasicMaterial color="#2BDE0B" />
       </mesh>
       <mesh rotation={[0, 0, Math.PI / 2]}>
         <boxGeometry args={[1.6, 0.06, 0.04]} />
-        <meshBasicMaterial color="#AA1100" />
+        <meshBasicMaterial color="#2BDE0B" />
       </mesh>
       {/* Blades */}
       <group ref={bladeRef}>
@@ -399,7 +399,7 @@ function Fan({
           <mesh key={i} rotation={[0, 0, (i * Math.PI * 2) / 5]}>
             <boxGeometry args={[0.55, 0.12, 0.03]} />
             <meshStandardMaterial
-              color={active ? "#FFFFFF" : "#CCCCCC"}
+              color={active ? "#39FF14" : "#1A6B0A"}
               roughness={0.3}
             />
           </mesh>
@@ -408,7 +408,7 @@ function Fan({
       {/* Center hub */}
       <mesh>
         <cylinderGeometry args={[0.1, 0.1, 0.06, 16]} />
-        <meshStandardMaterial color="#CC2200" metalness={0.5} />
+        <meshStandardMaterial color="#39FF14" metalness={0.5} />
       </mesh>
     </group>
   );
@@ -529,21 +529,21 @@ function SensorNode({
             {/* Mini fan protective frame */}
             <mesh rotation={[Math.PI / 2, 0, 0]}>
               <ringGeometry args={[0.22, 0.25, 32]} />
-              <meshBasicMaterial color="#FF3B30" side={THREE.DoubleSide} />
+              <meshBasicMaterial color="#39FF14" side={THREE.DoubleSide} />
             </mesh>
             {/* Spinning blades group */}
             <group ref={fanRef}>
               {[0, 1, 2, 3].map((idx) => (
                 <mesh key={idx} rotation={[0, 0, (idx * Math.PI) / 2]}>
                   <boxGeometry args={[0.41, 0.045, 0.012]} />
-                  <meshStandardMaterial color="#475569" roughness={0.3} />
+                  <meshStandardMaterial color="#00FF66" roughness={0.3} />
                 </mesh>
               ))}
             </group>
             {/* Central cap */}
             <mesh>
               <sphereGeometry args={[0.05, 12, 12]} />
-              <meshStandardMaterial color="#FF3B30" />
+              <meshStandardMaterial color="#39FF14" />
             </mesh>
           </group>
         )}
