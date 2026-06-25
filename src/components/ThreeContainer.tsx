@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Line } from "@react-three/drei";
+import { OrbitControls, Line, Html } from "@react-three/drei";
 import * as THREE from "three";
 import { TelemetryState } from "@/hooks/useTelemetrySim";
 
@@ -421,6 +421,7 @@ interface SensorNodeProps {
   onClick: () => void;
   hanging?: boolean;
   hasMiniFan?: boolean;
+  isSelected?: boolean;
 }
 
 function SensorNode({
@@ -429,6 +430,7 @@ function SensorNode({
   onClick,
   hanging = true,
   hasMiniFan = false,
+  isSelected = false,
 }: SensorNodeProps) {
   const [hovered, setHovered] = useState(false);
   const ledRef = useRef<THREE.Mesh>(null);
@@ -546,6 +548,16 @@ function SensorNode({
           </group>
         )}
       </group>
+
+      {/* Floating 3D HTML Label */}
+      {hasMiniFan && isSelected && (
+        <Html position={[0, 0.45, 0]} center distanceFactor={8}>
+          <div className="bg-orange-600/90 text-white font-bold text-[8px] uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-lg border border-orange-400/50 whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5 backdrop-blur-xs">
+            <span className="inline-block animate-spin" style={{ animationDuration: "3s" }}>🌀</span>
+            <span>Node có cánh quạt</span>
+          </div>
+        </Html>
+      )}
     </group>
   );
 }
@@ -594,9 +606,11 @@ function CargoBox({
 function ContainerModel({
   state,
   onNodeSelect,
+  selectedId,
 }: {
   state: TelemetryState;
   onNodeSelect: (label: string) => void;
+  selectedId: string | null;
 }) {
   const W = 4, H = 3.6, L = 9;
   const isFanActive = state.fanRelay === "ON";
@@ -693,10 +707,10 @@ function ContainerModel({
       ))}
 
       {/* ── Sensor Nodes ── */}
-      <SensorNode position={[-0.8, -0.4, -2.5]} status={state.nodeStatus} onClick={() => onNodeSelect("NODE01")} />
-      <SensorNode position={[0.8, 0.2, 0]} status="NORMAL" onClick={() => onNodeSelect("NODE02")} hasMiniFan={true} />
-      <SensorNode position={[-1.2, -1.5, 1.0]} status="NORMAL" onClick={() => onNodeSelect("NODE03")} hanging={false} />
-      <SensorNode position={[0.6, 1.5, 1.2]} status="WARNING" onClick={() => onNodeSelect("NODE04")} />
+      <SensorNode position={[-0.8, -1.4, 0]} status={state.nodeStatus} onClick={() => onNodeSelect("NODE01")} hanging={false} hasMiniFan={true} isSelected={selectedId === "NODE01"} />
+      <SensorNode position={[0.8, 0.4, 0]} status="NORMAL" onClick={() => onNodeSelect("NODE02")} hasMiniFan={true} isSelected={selectedId === "NODE02"} />
+      <SensorNode position={[1.2, -1.4, 3.5]} status="NORMAL" onClick={() => onNodeSelect("NODE03")} hanging={false} isSelected={selectedId === "NODE03"} />
+      <SensorNode position={[-1.2, 1.4, -3.8]} status="WARNING" onClick={() => onNodeSelect("NODE04")} isSelected={selectedId === "NODE04"} />
     </group>
   );
 }
@@ -705,11 +719,24 @@ function ContainerModel({
 export default function ThreeContainer({ state }: ThreeContainerProps) {
   const [mounted, setMounted] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
 
   useEffect(() => {
     const h = requestAnimationFrame(() => setMounted(true));
     return () => cancelAnimationFrame(h);
   }, []);
+
+  useEffect(() => {
+    if (isExpanded) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isExpanded]);
 
   if (!mounted) {
     return (
@@ -788,50 +815,50 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
     },
     NODE01: {
       icon: "📡",
-      name: "Sensor Node 01 — Vùng trước",
+      name: "Sensor Node 01 — Giữa khoang (Đáy thùng)",
       rows: [
         ["Ethylene (C2H4)", `${state.c2h4} ppm`],
         ["Nhiệt độ", `${state.temperatureAmbient}°C`],
         ["Độ ẩm", `${state.humidity}% RH`],
         ["Giao thức", "Mesh ESP-NOW"],
         ["Trạng thái", state.nodeStatus === "NORMAL" ? "🟢 Bình thường" : state.nodeStatus === "WARNING" ? "🟡 Cảnh báo" : "🔴 Nguy hiểm"],
-        ["Vị trí", "Vùng A — Gần quạt"],
+        ["Vị trí", "Vùng B — Đáy thùng giữa khoang (Có quạt)"],
       ],
     },
     NODE02: {
       icon: "🌀",
-      name: "Sensor Node 02 — Quạt Mini Tích Hợp",
+      name: "Sensor Node 02 — Giữa khoang (Treo trần)",
       rows: [
         ["Ethylene (C2H4)", "1.5 ppm"],
         ["Nhiệt độ", "3.9°C"],
         ["Độ ẩm", "85% RH"],
         ["Giao thức", "Mesh ESP-NOW"],
         ["Trạng thái", "🟢 Hoạt động (Quạt mini quay)"],
-        ["Vị trí", "Vùng B — Giữa container"],
+        ["Vị trí", "Vùng B — Đối diện Node 01 (Có quạt)"],
       ],
     },
     NODE03: {
       icon: "📦",
-      name: "Sensor Node 03 — Cận sàn (Thùng táo #05)",
+      name: "Sensor Node 03 — Cuối toa xe",
       rows: [
         ["Ethylene (C2H4)", "1.2 ppm"],
         ["Nhiệt độ sàn", "4.1°C"],
         ["Độ ẩm", "87% RH"],
         ["Giao thức", "Mesh ESP-NOW"],
         ["Kiểu lắp", "Đặt dưới sàn (Không treo)"],
-        ["Vị trí", "Vùng B3 — Sát bên Thùng táo đỏ #05"],
+        ["Vị trí", "Vùng C — Cuối toa xe (Cận sàn)"],
       ],
     },
     NODE04: {
       icon: "⚠️",
-      name: "Sensor Node 04 — Sát trần (Điểm mù)",
+      name: "Sensor Node 04 — Sát trần",
       rows: [
         ["Ethylene (C2H4)", "0.8 ppm"],
-        ["Nhiệt độ trần (Điểm mù)", "6.8°C"],
+        ["Nhiệt độ sát trần", "6.8°C"],
         ["Độ ẩm", "80% RH"],
         ["Giao thức", "Mesh ESP-NOW"],
         ["Trạng thái", "🟡 Tụ nhiệt điểm mù sát trần"],
-        ["Vị trí", "Vùng C — Cao nhất sát trần phía sau"],
+        ["Vị trí", "Vùng A — Sát trần phía trước (Cạnh dàn lạnh)"],
       ],
     },
   };
@@ -855,19 +882,66 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
   const selected = selectedId ? deviceMap[selectedId] : null;
 
   return (
-    <div className="card-flat p-5 flex flex-col gap-4 relative">
-      <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-        <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+    <div className={isExpanded 
+      ? "fixed inset-0 z-50 bg-[#0A0A0A] p-6 flex flex-col gap-4 w-screen h-screen overflow-hidden" 
+      : "card-flat p-5 flex flex-col gap-4 relative"
+    }>
+      <div className={`flex items-center justify-between border-b pb-3 ${isExpanded ? "border-white/10" : "border-gray-100"}`}>
+        <h2 className={`text-xs font-bold uppercase tracking-widest ${isExpanded ? "text-gray-400" : "text-gray-500"}`}>
           Mô phỏng 3D Container Lạnh — ESP32 + Relay
         </h2>
-        <span className="text-[10px] text-gray-400">Kéo để xoay · Cuộn để zoom</span>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] text-gray-400">Kéo để xoay · Cuộn để zoom</span>
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className={`text-[10px] font-bold px-2 py-1 rounded transition-all cursor-pointer flex items-center gap-1.5 ${
+              isExpanded 
+                ? "text-red-400 hover:text-red-300 bg-red-950/40 border border-red-900/30" 
+                : "text-blue-500 hover:text-blue-600 bg-blue-50"
+            }`}
+          >
+            {isExpanded ? (
+              <>
+                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 14h6v6M20 10h-6V4M14 10l6-6M10 14l-6 6"/></svg>
+                <span>Thu nhỏ</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                <span>Phóng to</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       <div
-        className="w-full h-[420px] rounded-xl relative overflow-hidden border border-gray-200"
+        className={`w-full ${isExpanded ? "flex-1" : "h-[420px]"} rounded-xl relative overflow-hidden border ${isExpanded ? "border-white/10" : "border-gray-200"}`}
         style={{ background: "#0A0A0A" }}
       >
-        <Canvas camera={{ position: [8, 6, 10], fov: 38 }}>
+        {/* Floating toolbar */}
+        <div className="absolute top-3 left-3 flex items-center gap-2 z-10">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center justify-center w-8 h-8 rounded-lg bg-black/60 border border-white/10 text-white hover:bg-black/80 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            title={isExpanded ? "Thu nhỏ" : "Phóng to toàn màn hình"}
+          >
+            {isExpanded ? (
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 14h6v6M20 10h-6V4M14 10l6-6M10 14l-6 6"/></svg>
+            ) : (
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            )}
+          </button>
+          <button
+            onClick={() => setResetKey(prev => prev + 1)}
+            className="flex items-center justify-center w-8 h-8 rounded-lg bg-black/60 border border-white/10 text-white hover:bg-black/80 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            title="Đặt lại góc nhìn"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          </button>
+        </div>
+
+        <Canvas key={resetKey} camera={{ position: [8, 6, 10], fov: 38 }}>
           <color attach="background" args={["#0A0A0A"]} />
           <ambientLight intensity={0.7} />
           <pointLight position={[10, 10, 10]} intensity={1.8} />
@@ -876,7 +950,7 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
           <pointLight position={[3.5, 2.5, -2]} intensity={3.5} color="#00FF88" distance={4} decay={2} />
           {/* Red spotlight focused on Relay */}
           <pointLight position={[3.5, 2.0, -2.2]} intensity={2.8} color="#FF4400" distance={3.5} decay={2} />
-          <ContainerModel state={state} onNodeSelect={(id) => setSelectedId(id)} />
+          <ContainerModel state={state} onNodeSelect={(id) => setSelectedId(id)} selectedId={selectedId} />
           <OrbitControls enableZoom maxPolarAngle={Math.PI / 1.8} minDistance={5} maxDistance={18} />
         </Canvas>
 
@@ -896,7 +970,7 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
 
         {/* HUD — detailed specs */}
         {selected ? (
-          <div className="absolute bottom-3 left-3 bg-black/85 border border-white/10 rounded-xl p-3 text-[11px] text-gray-300 max-w-[270px] backdrop-blur-sm">
+          <div className="absolute bottom-3 left-3 bg-black/85 border border-white/10 rounded-xl p-3 text-[11px] text-gray-300 max-w-[270px] backdrop-blur-sm z-10">
             <div className="flex items-center gap-2 mb-2 border-b border-white/10 pb-2">
               <span className="text-base">{selected.icon}</span>
               <span className="font-bold text-white text-xs leading-tight">{selected.name}</span>
@@ -942,7 +1016,7 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
             )}
           </div>
         ) : (
-          <div className="absolute bottom-3 left-3 bg-black/85 border border-white/10 rounded-xl px-3 py-2 text-[10px] text-gray-400 backdrop-blur-sm flex items-center gap-1.5">
+          <div className="absolute bottom-3 left-3 bg-black/85 border border-white/10 rounded-xl px-3 py-2 text-[10px] text-gray-400 backdrop-blur-sm flex items-center gap-1.5 z-10">
             <span className="animate-pulse text-[#00bcff]">👉</span>
             <span>Nhấp vào bất kỳ linh kiện nào để xem chi tiết</span>
           </div>
@@ -950,14 +1024,14 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
       </div>
 
       {/* Component legend below canvas */}
-      <div className="grid grid-cols-4 gap-2 text-[10px] text-gray-500">
+      <div className={`grid grid-cols-4 gap-2 text-[10px] ${isExpanded ? "text-gray-400" : "text-gray-500"}`}>
         {[
           { icon: "🟢", label: "ESP32 (Wi-Fi/BT)" },
           { icon: "🔴", label: "Relay Module 2CH" },
           { icon: "❄️",  label: "Dàn lạnh (Evaporator)" },
           { icon: "🌀", label: `Quạt thông gió (${state.fanRelay === "ON" ? "ĐANG CHẠY" : "STANDBY"})` },
         ].map(({ icon, label }) => (
-          <div key={label} className="flex items-center gap-1.5 bg-gray-50 rounded-lg px-2 py-1.5">
+          <div key={label} className={`flex items-center gap-1.5 rounded-lg px-2 py-1.5 ${isExpanded ? "bg-white/5 border border-white/5" : "bg-gray-50"}`}>
             <span>{icon}</span>
             <span className="leading-tight">{label}</span>
           </div>
