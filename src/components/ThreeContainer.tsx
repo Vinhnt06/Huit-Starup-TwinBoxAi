@@ -785,7 +785,7 @@ function ContainerModel({
 
       {/* ── Sensor Nodes ── */}
       <SensorNode position={[-0.8, -1.4, 0]} status={state.nodeStatus} onClick={() => onNodeSelect("NODE01")} hanging={false} hasMiniFan={true} isSelected={selectedId === "NODE01"} />
-      <SensorNode position={[0.8, 0.4, 0]} status="NORMAL" onClick={() => onNodeSelect("NODE02")} hasMiniFan={true} isSelected={selectedId === "NODE02"} />
+      <SensorNode position={[0.8, 0.4, 0]} status={state.nodeStatus} onClick={() => onNodeSelect("NODE02")} hasMiniFan={true} isSelected={selectedId === "NODE02"} />
       <SensorNode position={[1.2, -1.4, 3.5]} status="NORMAL" onClick={() => onNodeSelect("NODE03")} hanging={false} isSelected={selectedId === "NODE03"} />
       <SensorNode position={[-1.2, 1.4, -3.8]} status="WARNING" onClick={() => onNodeSelect("NODE04")} isSelected={selectedId === "NODE04"} />
     </group>
@@ -910,7 +910,7 @@ export default function ThreeContainer({ state }: ThreeContainerProps) {
         ["Nhiệt độ", "3.9°C"],
         ["Độ ẩm", "85% RH"],
         ["Giao thức", "Mesh ESP-NOW"],
-        ["Trạng thái", "🟢 Hoạt động (Quạt mini quay)"],
+        ["Trạng thái", state.nodeStatus === "NORMAL" ? "🟢 Bình thường" : state.nodeStatus === "WARNING" ? "🟡 Cảnh báo" : "🔴 Nguy hiểm"],
         ["Vị trí", "Vùng B — Đối diện Node 01 (Có quạt)"],
       ],
     },
